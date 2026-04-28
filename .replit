@@ -17,3 +17,5 @@ args = "python main.py"
 
 [agent]
 expertMode = false
+
+[nix]
