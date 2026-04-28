@@ -1,0 +1,19 @@
+modules = ["python-3.11"]
+
+[deployment]
+router = "application"
+
+[workflows]
+runButton = "Project"
+
+[[workflows.workflow]]
+name = "Lancer"
+mode = "sequential"
+author = 58314133
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "python main.py"
+
+[agent]
+expertMode = false
