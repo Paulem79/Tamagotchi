@@ -1,10 +1,10 @@
 import time
 from typing import Callable
 
-import communs
+import modules.nourriture
 
 # Variables importantes du jeu
-modules: list[tuple[Callable[[], None], int]] = []
+modules_charges: list[tuple[Callable[[], None], int]] = []
 running: bool = True
 ms_ecoule: int = 0
 
@@ -12,7 +12,7 @@ ms_ecoule: int = 0
 # S'exécute une seule fois au début
 def initialiser():
     # Charger le module qui dit test, et qui s'exécute toutes les secondes (1000 ms)
-    charger(communs.test, 1000)
+    charger(modules.nourriture.test, 1000)
     # Dire qu'on a fini de tout démarrer
     print("Initialisé !")
 
@@ -23,7 +23,7 @@ Charger un module dans le jeu, une fonction qui s'exécute toutes les X ms
 
 
 def charger(fonction_principale: Callable[[], None], toutes_les_ms: int):
-    modules.append((fonction_principale, toutes_les_ms))
+    modules_charges.append((fonction_principale, toutes_les_ms))
 
 
 """
@@ -48,5 +48,5 @@ if __name__ == "__main__":
         ms_ecoule += 1
 
         # On exécute tous les modules
-        for fonction, tous_les in modules:
+        for fonction, tous_les in modules_charges:
             executer(fonction, tous_les)
