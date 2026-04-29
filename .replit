@@ -19,3 +19,4 @@ args = "python main.py"
 expertMode = false
 
 [nix]
+packages = ["SDL2", "SDL2_image", "SDL2_mixer", "SDL2_ttf", "fontconfig", "freetype", "libjpeg", "libpng", "pkg-config", "portmidi"]
