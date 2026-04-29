@@ -1,7 +1,7 @@
 import time
 from typing import Callable
 
-import modules.nourriture
+from modules import modules
 
 # Variables importantes du jeu
 modules_charges: list[tuple[Callable[[], None], int]] = []
@@ -12,7 +12,8 @@ ms_ecoule: int = 0
 # S'exécute une seule fois au début
 def initialiser():
     # Charger le module qui dit test, et qui s'exécute toutes les secondes (1000 ms)
-    charger(modules.nourriture.test, 1000)
+    for module in modules:
+        charger(module[0], module[1])
     # Dire qu'on a fini de tout démarrer
     print("Initialisé !")
 
@@ -47,6 +48,6 @@ if __name__ == "__main__":
         # On ajoute 1 ms à notre compteur (pour les exécutions de modules)
         ms_ecoule += 1
 
-        # On exécute tous les modules
+        # On exécute tous les modules chargés
         for fonction, tous_les in modules_charges:
             executer(fonction, tous_les)
