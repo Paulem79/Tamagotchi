@@ -4,7 +4,7 @@ modules = ["python-3.11"]
 router = "application"
 
 [workflows]
-runButton = "Project"
+runButton = "Lancer"
 
 [[workflows.workflow]]
 name = "Lancer"
