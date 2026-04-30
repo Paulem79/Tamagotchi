@@ -9,30 +9,28 @@ running: bool = True
 ms_ecoule: int = 0
 
 
-# S'exécute une seule fois au début
 def initialiser():
-    # Charger le module qui dit test, et qui s'exécute toutes les secondes (1000 ms)
+    """
+    S'exécute une seule fois au début, pour charger tous les modules
+    """
+    # Charger tous les modules
     for module in modules:
         charger(module[0], module[1])
     # Dire qu'on a fini de tout démarrer
     print("Initialisé !")
 
 
-"""
-Charger un module dans le jeu, une fonction qui s'exécute toutes les X ms
-"""
-
-
 def charger(fonction_principale: Callable[[], None], toutes_les_ms: int):
+    """
+    Charger un module dans le jeu, une fonction qui s'exécute toutes les X ms
+    """
     modules_charges.append((fonction_principale, toutes_les_ms))
 
 
-"""
-Simple fonction pour exécuter un module (utilisé dans la boucle principale)
-"""
-
-
 def executer(module: Callable[[], None], toutes_les: int):
+    """
+    Simple fonction pour exécuter un module (utilisé dans la boucle principale)
+    """
     if ms_ecoule % toutes_les == 0:
         module()
 

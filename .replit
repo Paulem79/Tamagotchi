@@ -13,7 +13,7 @@ author = 58314133
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py"
+args = "python game.py"
 
 [agent]
 expertMode = false
