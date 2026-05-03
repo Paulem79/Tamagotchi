@@ -3,6 +3,8 @@ from typing import Callable
 
 from modules import modules
 
+import modules.commande as commande
+
 # Variables importantes du jeu
 modules_charges: list[tuple[Callable[[], None], int]] = []
 running: bool = True
@@ -38,6 +40,7 @@ def executer(module: Callable[[], None], toutes_les: int):
 # On ne veut exécuter ceci que si on lance le programme directement
 if __name__ == "__main__":
     initialiser()
+    #commande.action()  ne marche pas : tout le programme attent une reponse à l'input et donc arrete la faim et le tps. je laisse si jamais quelqu'un sait comment resoudre
 
     # Boucle principale
     while running:
