@@ -1,8 +1,16 @@
 import modules.nourriture as nourriture
+import modules.eau as eau
+import modules.sante as sante
+import aioconsole
 
-def action():
-    print(nourriture.faim) #test pour voir si faim descend
-    a = input("action?")
+async def action():
+    a = await aioconsole.ainput('')
+    
     if a == "nourrir":
         nourriture.nourrir()
-    action() #se rapelle elle meme 
+    elif a == "boire":
+        eau.boire()
+    elif a == "soins":
+        sante.guerrir()
+    
+    await action() # se rappelle elle meme 
