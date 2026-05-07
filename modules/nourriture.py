@@ -3,10 +3,10 @@ import modules.sante as sante
 import modules.config as config
 
 faim = 100
-
+# fonction de nourritur renvoi la quantitté de faim et la mort si faim=0
 def nourriture() -> tuple[str, int]:
     if faim < 1:
-        config.tuer()
+        config.tuer("mort de faim!")
         return ("Faim :", faim)
     
     digerer()
@@ -15,7 +15,11 @@ def nourriture() -> tuple[str, int]:
 
 def digerer():
     global faim
-    faim -= 1
+    malade = sante.malade
+    if malade==True :
+        faim -= random.randint(1, 5)
+    else :
+        faim -= 1
 
 
 def nourrir():

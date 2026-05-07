@@ -2,10 +2,11 @@ import random
 import modules.eau as water
 import modules.config as config
 
+
+# fonction de besoin accentu la difficuler et le réalisme
 def pypy():
-  eau = water.eau
-  if random.randint(0, 10)==0 :
-    eau = eau-random.randint(15,20)
-  if eau<1:
-    config.tuer()
-    print("Vous êtes mort de soif !")
+    if random.randint(0, 5) == 0:
+        print("pipi")
+        water.eau -= random.randint(15, 20)
+    if water.eau < 1:
+        config.tuer("Mort de soif !")

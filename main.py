@@ -7,7 +7,7 @@ from modules import modules
 import modules.commande as commande
 import modules.config as config
 
-def executer(module: Callable[[], tuple[str, int]], toutes_les: int):
+def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
     """
     Simple fonction pour exécuter un module (utilisé dans la boucle principale)
     """
@@ -33,7 +33,10 @@ async def main():
         config.ms_ecoule += 1
 
         if config.mort:
-            print("Vous êtes mort !")
+            if not config.mort_raison == "":
+                print(config.mort_raison)
+            else:
+                print("Mort.")
             return
 
         # On exécute tous les modules chargés
