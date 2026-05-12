@@ -13,7 +13,8 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [x] Module : météo
 - [x] Module : défibrillateur après AVC
 - [x] Affichage graphique
-  - [x] Boutons
+  - [x] Base PyGame
+  - [ ] Boutons pour tous les états
   - [ ] Affichage personnage
   - [ ] Boîte de dialogue pour interaction
   - [ ] Menu principal
