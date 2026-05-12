@@ -1,51 +1,63 @@
-import pygame
+# Créé par paulem, le 12/05/2026 en Python 3.7
+import pygame as pg
+from pygame.locals import *
+from typing import Callable
 
-import modules.nourriture as nourriture
+elements: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
-# Initialize Pygame
-pygame.init()
-pygame.font.init()
+def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
+    """Crée l'écran de jeu"""
+    ecran = pg.display.set_mode(fenetre)
+    return ecran
 
-# Source - https://stackoverflow.com/a/20842987
-# Posted by Bartlomiej Lewandowski, modified by community. See post 'Timeline' for change history
-# Retrieved 2026-04-30, License - CC BY-SA 4.0
-my_font = pygame.font.SysFont('Arial', 150)
-
-# Set up the game window
-screen = pygame.display.set_mode((1400, 700))
-pygame.display.set_caption("Hello Pygame")
-
-# create a surface object, image is drawn on it.
-imp = pygame.image.load("images/personnage.bmp").convert()
-
-# Using blit to copy content from one surface to other
-screen.blit(imp, (0, 0))
-
-# paint screen one time
-pygame.display.flip()
-
-# Rendu du texte
-text_surface = my_font.render("Nourri !", False, (0, 0, 0), (255, 255, 255))
-
-screen.blit(text_surface, (0,0))
-
-# Game loop
-running = True
-while running:
-    text: str = "Appuie sur la flèche gauche !"
+def charger_arriere_plan(ecran: pg.Surface) -> None:
+    """Charge l'arrière plan de jeu"""
+    fenetre = (ecran.get_width(), ecran.get_height())
     
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                print("Nourri !")
-                nourriture.nourrir(1)
-                text = "Nourri !"
-                print(f"Faim: {nourriture.faim}")
+    background = pg.image.load("images/pluie.png").convert()
+    background = pg.transform.scale(background,fenetre)
+    
+    # coller le rectangle par dessus en (0,0)
+    ecran.blit(background,(0,0))
 
+def charger_bouton(ecran: pg.Surface, position: tuple[int, int], taille: tuple[int, int], action: Callable[[], None]):
+    """Charge un bouton sur l'écran"""
+    # charger l'image, convert_alpha permet la transparence
+    button = pg.image.load("images/button.png").convert_alpha()
+    button = pg.transform.scale(button,taille)
+    ecran.blit(button,position)
+    elements.append((position, taille, action))
 
+def actionner_boutons(pos: tuple[int, int]):
+    """Actionne les boutons en fonction de la position de la souris"""
+    for element in elements:
+        position, taille, action = element
+        if (position[0] <= pos[0] < position[0] + taille[0]) and (position[1] <= pos[1] < position[1] + taille[1]) :
+            action()
+            break
 
+pg.init()
 
-# Quit Pygame
-pygame.quit()
+fenetre = (800, 600)
+ecran = creer_ecran(fenetre)
+
+charger_arriere_plan(ecran)
+
+button_pos = (500,300)
+button_taille = (20,10)
+charger_bouton(ecran, button_pos, button_taille, lambda: print("cliqué !"))
+
+pg.display.flip() # rafraîchir l’écran
+
+jouer = True
+while jouer:
+    for event in pg.event.get():
+        if event.type == QUIT:
+            jouer = False
+        if event.type == KEYDOWN:
+            print("dd")
+        if event.type == MOUSEBUTTONDOWN:
+            pos = event.pos
+            actionner_boutons(pos)
+
+pg.quit()

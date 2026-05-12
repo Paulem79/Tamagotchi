@@ -2,7 +2,7 @@ import random, time
 import modules.sante as sante
 import modules.config as config
 
-faim = 100
+faim: int = 100
 # fonction de nourritur renvoi la quantitté de faim et la mort si faim=0
 def nourriture() -> tuple[str, int]:
     if faim < 1:

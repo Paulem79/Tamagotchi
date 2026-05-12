@@ -4,8 +4,14 @@ from typing import Callable
 
 from modules import modules
 
+import modules.DAE as DAE
 import modules.commande as commande
 import modules.config as config
+
+resultats: dict[str, config.T] = {}
+
+def obtenir_resultat(nom: str):
+    return resultats.get(nom, None)
 
 def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
     """
@@ -20,24 +26,31 @@ def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
                 nom = "Module inconnu :"
             
             if value is not None:
+                resultats[nom] = value
                 print(nom, value)
+
+async def attente_ms():
+    """On veut attendre 1 ms pour éviter de tout casser"""
+    await asyncio.sleep(0.001)
 
 async def main():
     asyncio.create_task(commande.action()) # ne marche pas : tout le programme attent une reponse à l'input et donc arrete la faim et le tps. je laisse si jamais quelqu'un sait comment resoudre
 
     # Boucle principale
     while config.running:
-        # On veut attendre 1 ms pour éviter de tout casser
-        await asyncio.sleep(0.001)
+        await attente_ms()
+        
         # On ajoute 1 ms à notre compteur (pour les exécutions de modules)
         config.ms_ecoule += 1
 
         if config.mort:
-            if not config.mort_raison == "":
-                print(config.mort_raison)
-            else:
-                print("Mort.")
-            return
+            completement_mort = await DAE.DAE()
+            if completement_mort:
+                if not config.mort_raison == "":
+                    print(config.mort_raison)
+                else:
+                    print("Mort.")
+                break
 
         # On exécute tous les modules chargés
         for fonction, tous_les in modules:

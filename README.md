@@ -8,17 +8,17 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [x] Module : soif
 - [x] Module : santé – maladie
 - [x] Module : besoins
-- [ ] Module : sport
-- [ ] Module : émotions (triste = plus de sport et tombe malade) arrière plan change de couleur et d’environnement (triste = pluie)
-- [ ] Module : météo
-- [ ] Module : défibrillateur après AVC
-- [ ] Affichage graphique
-  - [ ] Boutons
+- [x] Module : sport
+- [x] Module : émotions (triste = plus de sport et tombe malade) arrière plan change de couleur et d’environnement (triste = pluie)
+- [x] Module : météo
+- [x] Module : défibrillateur après AVC
+- [x] Affichage graphique
+  - [x] Boutons
   - [ ] Affichage personnage
   - [ ] Boîte de dialogue pour interaction
   - [ ] Menu principal
   - [ ] En dernier : amélioration avec effets
-- [ ] Système de score
+- [x] Système de score
 - [ ] Musique et sound effect
 - [ ] Système de difficulté
 - [ ] Options du jeu

@@ -1,6 +1,8 @@
 import random
+import modules.nourriture as nourriture
+import modules.eau as water
 
-etat_de_sante = 100
+etat_de_sante: int = 100
 
 
 def sport_decompte():
@@ -11,4 +13,7 @@ def sport_decompte():
 
 def sport():
     global etat_de_sante
-    etat_de_sante = etat_de_sante + random.randint(1, 50)
+    etat_de_sante = etat_de_sante + random.randint(1, 30)
+    nourriture.faim-=random.randint(10,20)
+    water.eau-=random.randint(5,10)
+    
