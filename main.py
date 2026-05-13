@@ -34,7 +34,7 @@ async def attente_ms():
     await asyncio.sleep(0.001)
 
 async def main():
-    asyncio.create_task(commande.action()) # ne marche pas : tout le programme attent une reponse à l'input et donc arrete la faim et le tps. je laisse si jamais quelqu'un sait comment resoudre
+    asyncio.create_task(commande.action())
 
     # Boucle principale
     while config.running:

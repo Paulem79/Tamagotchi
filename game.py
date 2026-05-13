@@ -2,6 +2,10 @@
 import pygame as pg
 from pygame.locals import *
 from typing import Callable
+import asyncio
+from main import main
+import modules.nourriture as nourriture
+import modules.config as config
 
 elements: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
@@ -36,28 +40,46 @@ def actionner_boutons(pos: tuple[int, int]):
             action()
             break
 
-pg.init()
+def nourrir_bouton():
+    print("nourrir")
+    nourriture.nourrir()
 
-fenetre = (800, 600)
-ecran = creer_ecran(fenetre)
 
-charger_arriere_plan(ecran)
+async def game_loop():
+    """La boucle de jeu asynchrone"""
+    pg.init()
+    fenetre = (800, 600)
+    ecran = creer_ecran(fenetre)
 
-button_pos = (500,300)
-button_taille = (20,10)
-charger_bouton(ecran, button_pos, button_taille, lambda: print("cliqué !"))
+    charger_arriere_plan(ecran)
+    charger_bouton(ecran, (500, 300), (20, 10), nourrir_bouton)
+    pg.display.flip()
 
-pg.display.flip() # rafraîchir l’écran
+    jouer = True
+    while jouer:
+        # 1. Gestion des événements Pygame
+        for event in pg.event.get():
+            if event.type == QUIT:
+                jouer = False
+            if event.type == MOUSEBUTTONDOWN:
+                actionner_boutons(event.pos)
 
-jouer = True
-while jouer:
-    for event in pg.event.get():
-        if event.type == QUIT:
-            jouer = False
-        if event.type == KEYDOWN:
-            print("dd")
-        if event.type == MOUSEBUTTONDOWN:
-            pos = event.pos
-            actionner_boutons(pos)
+        # 2. Rendu Pygame
+        pg.display.update()
 
-pg.quit()
+        # 3. C'est ici l'astuce : on rend la main à asyncio 
+        # pour que les autres tâches (ex: main()) puissent s'exécuter
+        await asyncio.sleep(0.01) 
+
+    pg.quit()
+
+async def run_all():
+    """Lance tout en parallèle"""
+    # On lance main() et la boucle de jeu en même temps
+    await asyncio.gather(
+        main(),
+        game_loop()
+    )
+
+if __name__ == "__main__":
+    asyncio.run(run_all())
