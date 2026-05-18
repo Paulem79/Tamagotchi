@@ -34,7 +34,6 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
     ecran.blit(background, (0, 0))
 
 
-# --- MODIFICATION ICI : Ajout du paramètre 'texte' ---
 def charger_bouton(
     ecran: pg.Surface,
     position: tuple[int, int],
