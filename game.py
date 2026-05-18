@@ -5,6 +5,9 @@ from typing import Callable
 import asyncio
 import main
 import modules.nourriture as nourriture
+import modules.eau as eau
+import modules.sante as sante
+import modules.sport as sport
 import modules.config as config
 
 elements: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
@@ -40,10 +43,6 @@ def actionner_boutons(pos: tuple[int, int]):
             action()
             break
 
-def nourrir_bouton():
-    print("nourrir")
-    nourriture.nourrir()
-
 
 async def game_loop():
     """La boucle de jeu asynchrone"""
@@ -51,7 +50,11 @@ async def game_loop():
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)
     
-    charger_bouton(ecran, (20, 30), (70, 50), nourrir_bouton)
+    charger_bouton(ecran, (20, 30), (70, 50), nourriture.nourrir())
+    charger_bouton(ecran, (90, 80), (70, 50), eau.boire())
+    charger_bouton(ecran, (160, 130), (70, 50), sante.guerir())
+    charger_bouton(ecran, (230, 180), (70, 50), sport.sport())
+    
     pg.display.flip()
 
     jouer = True
