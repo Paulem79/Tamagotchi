@@ -3,7 +3,7 @@ import pygame as pg
 from pygame.locals import *
 from typing import Callable
 import asyncio
-from main import main
+import main
 import modules.nourriture as nourriture
 import modules.config as config
 
@@ -14,11 +14,11 @@ def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     ecran = pg.display.set_mode(fenetre)
     return ecran
 
-def charger_arriere_plan(ecran: pg.Surface) -> None:
+def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
     """Charge l'arrière plan de jeu"""
     fenetre = (ecran.get_width(), ecran.get_height())
     
-    background = pg.image.load("images/pluie.png").convert()
+    background = pg.image.load(f"images/{nom}").convert()
     background = pg.transform.scale(background,fenetre)
     
     # coller le rectangle par dessus en (0,0)
@@ -50,26 +50,31 @@ async def game_loop():
     pg.init()
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)
-
-    charger_arriere_plan(ecran)
-    charger_bouton(ecran, (500, 300), (20, 10), nourrir_bouton)
+    
+    charger_bouton(ecran, (20, 30), (70, 50), nourrir_bouton)
     pg.display.flip()
 
     jouer = True
     while jouer:
-        # 1. Gestion des événements Pygame
+        # Les évènements
         for event in pg.event.get():
             if event.type == QUIT:
                 jouer = False
             if event.type == MOUSEBUTTONDOWN:
                 actionner_boutons(event.pos)
 
-        # 2. Rendu Pygame
+        arriere_plan = main.obtenir_resultat("Temps :")
+
+        if arriere_plan == None:
+            arriere_plan = "background.jpg"
+        
+        charger_arriere_plan(ecran, arriere_plan)
+        
+        # Mettre à jour le rendu pygame
         pg.display.update()
 
-        # 3. C'est ici l'astuce : on rend la main à asyncio 
-        # pour que les autres tâches (ex: main()) puissent s'exécuter
-        await asyncio.sleep(0.01) 
+        # Attente pour synchroniser avec la logique principale
+        await main.attente_ms()
 
     pg.quit()
 
@@ -77,7 +82,7 @@ async def run_all():
     """Lance tout en parallèle"""
     # On lance main() et la boucle de jeu en même temps
     await asyncio.gather(
-        main(),
+        main.main(),
         game_loop()
     )
 

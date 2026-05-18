@@ -13,15 +13,6 @@ author = 58314133
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python main.py"
-
-[[workflows.workflow]]
-name = "Lancer PYGAME"
-mode = "sequential"
-author = 58314133
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
 args = "python game.py"
 
 [agent]
