@@ -23,6 +23,58 @@ def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     return ecran
 
 
+"""
+aspect_scale.py - Scaling surfaces keeping their aspect ratio
+Raiser, Frank - Sep 6, 2k++
+crashchaos at gmx.net
+
+This is a pretty simple and basic function that is a kind of
+enhancement to pygame.transform.scale. It scales a surface
+(using pygame.transform.scale) but keeps the surface's aspect
+ratio intact. So you will not get distorted images after scaling.
+A pretty basic functionality indeed but also a pretty useful one.
+
+Usage:
+is straightforward.. just create your surface and pass it as
+first parameter. Then pass the width and height of the box to
+which size your surface shall be scaled as a tuple in the second
+parameter. The aspect_scale method will then return you the scaled
+surface (which does not neccessarily have the size of the specified
+box of course)
+
+Dependency:
+a pygame version supporting pygame.transform (pygame-1.1+)
+"""
+
+
+def aspect_scale(img: pg.Surface, bx: int, by: int):
+    """Scales 'img' to fit into box bx/by.
+    This method will retain the original image's aspect ratio"""
+    ix, iy = img.get_size()
+    if ix > iy:
+        # fit to width
+        scale_factor = bx / float(ix)
+        sy = scale_factor * iy
+        if sy > by:
+            scale_factor = by / float(iy)
+            sx = scale_factor * ix
+            sy = by
+        else:
+            sx = bx
+    else:
+        # fit to height
+        scale_factor = by / float(iy)
+        sx = scale_factor * ix
+        if sx > bx:
+            scale_factor = bx / float(ix)
+            sx = bx
+            sy = scale_factor * iy
+        else:
+            sy = by
+
+    return pg.transform.scale(img, (sx, sy))
+
+
 def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
     """Charge l'arrière plan de jeu"""
     fenetre = (ecran.get_width(), ecran.get_height())
@@ -32,6 +84,17 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
 
     # coller le rectangle par dessus en (0,0)
     ecran.blit(background, (0, 0))
+
+
+def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
+    """Charge le personnage de jeu"""
+    image = "personnage-remove.png"
+    if mort:
+        image = "personnage.png"
+    
+    personnage = pg.image.load(f"images/{image}").convert_alpha()
+    personnage = aspect_scale(personnage, 400, 400)
+    ecran.blit(personnage, (200, 100))
 
 
 def charger_bouton(
@@ -100,6 +163,7 @@ async def game_loop():
             arriere_plan = "background.jpg"
 
         charger_arriere_plan(ecran, arriere_plan)
+        charger_personnage(ecran, config.mort)
         charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
         charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
         charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
