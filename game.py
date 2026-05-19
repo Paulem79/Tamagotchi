@@ -10,11 +10,9 @@ import modules.eau as eau
 import modules.nourriture as nourriture
 import modules.sante as sante
 import modules.sport as sport
+import modules.DAE as DAE
 
 elements: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
-
-# Obligé pour écrire texte
-pg.font.init()
 
 
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
@@ -142,7 +140,10 @@ def actionner_boutons(pos: tuple[int, int]):
 
 async def game_loop():
     """La boucle de jeu asynchrone"""
-    pg.init()
+    pg.init
+    # Obligé pour écrire texte
+    pg.font.init()
+    
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)
 
@@ -168,6 +169,8 @@ async def game_loop():
         charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
         charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
         charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
+        if DAE.demande_defibrilatteur:
+            charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner())
 
         # Mettre à jour rendu
         pg.display.update()

@@ -6,12 +6,20 @@ import modules.sante as sante
 import modules.sport as sport
 import random
 
+demande_defibrilatteur: bool = False
 actionné: bool = False
 
-async def DAE() -> bool:
+def actionner():
   global actionné
+  actionné = True
+
+async def DAE() -> bool:
+  global demande_defibrilatteur
+  global actionné
+
+  demande_defibrilatteur = True
   
-  for i in range(5000):
+  for i in range(5000): # 5s
     await main.attente_ms()
     # Toutes les secondes
     if i % 1000 == 0:
@@ -20,6 +28,7 @@ async def DAE() -> bool:
     if actionné:
       print("Défibrillateur actionné !")
       actionné = False
+      demande_defibrilatteur = False
       break
 
   if actionné and random.randint(0,100) <= 35:

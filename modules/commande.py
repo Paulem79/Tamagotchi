@@ -10,7 +10,7 @@ async def action():
 
     if a == "dae":
         print("dae")
-        DAE.actionné = True
+        DAE.actionner()
     elif a == "nourrir":
         nourriture.nourrir()
     elif a == "boire":
