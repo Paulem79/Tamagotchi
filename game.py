@@ -86,13 +86,13 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
-    image = "personnage-remove.png"
+    image = "poyo_Idle.png"
     if mort:
-        image = "personnage.png"
+        image = "poyo_dead.png"
     
     personnage = pg.image.load(f"images/{image}").convert_alpha()
     personnage = aspect_scale(personnage, 400, 400)
-    ecran.blit(personnage, (200, 100))
+    ecran.blit(personnage, (200, 300))
 
 
 def charger_bouton(
@@ -125,6 +125,20 @@ def charger_bouton(
 
     # Enregistrer pour détection clics
     elements.append((position, taille, action))
+
+def barre_vie(ecran: pg.Surface, position: tuple[int, int], valeur: int, cbase:tuple[int,int,int], cmilieu: tuple[int, int, int], cfin:tuple[int,int,int]):
+    jauge_x, jauge_y = position
+    jauge_largeur = 30
+    jauge_hauteur = 300
+    ratio = valeur / 100
+    hauteur_dynamique = jauge_hauteur * ratio
+    couleur_jauge = cbase if ratio > 0.6 else cmilieu if ratio > 0.3 else cfin
+
+    jauge_y_dynamique = jauge_y + (jauge_hauteur - hauteur_dynamique)
+    
+    pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur))
+    pg.draw.rect(ecran, couleur_jauge, (jauge_x,jauge_y_dynamique, jauge_largeur, hauteur_dynamique))
+    pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur), 2)
 
 
 def actionner_boutons(pos: tuple[int, int]):
@@ -172,6 +186,10 @@ async def game_loop():
         if DAE.demande_defibrilatteur:
             charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner)
 
+        barre_vie(ecran, (750, 300), sport.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
+        barre_vie(ecran, (700, 300), nourriture.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
+        barre_vie(ecran, (650, 300), eau.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
+
         # Mettre à jour rendu
         pg.display.update()
 
@@ -188,14 +206,3 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
-
-def barre_vie():
-    jauge_x = 250
-    jauge_y = 250
-    jauge_largeur_max = 300
-    jauge_hauteur = 30
-    BLANC = (255, 255, 255)
-    GRIS_FONCE = (50, 50, 50)
-    VERT = (0, 255, 0)
-    ROUGE = (255, 0, 0)
-    

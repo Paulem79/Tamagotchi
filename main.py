@@ -61,22 +61,34 @@ async def main():
         maintenant = time.perf_counter()
         ms_passees = int((maintenant - dernier_temps) * 1000)
 
-        if ms_passees > 0:
-            config.ms_ecoule += ms_passees
-            dernier_temps = maintenant
+        if ms_passees <= 0:
+            continue
+            
+        config.ms_ecoule += ms_passees
+        dernier_temps = maintenant
 
-            if config.mort:
+        # Dans ton fichier main.py, à l'intérieur du "while config.running:"
+
+        if config.mort and not config.dae_en_cours:
+            config.dae_en_cours = True
+
+            # Fonction locale pour gérer la fin du DAE en arrière-plan
+            async def gerer_fin_dae():
                 completement_mort = await DAE.DAE()
                 if completement_mort:
                     if not config.mort_raison == "":
                         print(config.mort_raison)
                     else:
                         print("Mort.")
-                    break
+                    config.running = False  # Arrête le jeu proprement
+                config.dae_en_cours = False
 
-            # Exécute les modules chargés
-            for fonction, tous_les in modules:
-                executer(fonction, tous_les)
+            # On lance le DAE en arrière-plan sans bloquer la boucle de temps !
+            asyncio.create_task(gerer_fin_dae())
+
+        # Exécute les modules chargés
+        for fonction, tous_les in modules:
+            executer(fonction, tous_les)
 
 if __name__ == "__main__":
 

@@ -22,10 +22,10 @@ def temps():
     meteo_actuel: str
     
     if pression_atmo > 1000:
-        meteo_actuel = "soleil.jpg"
+        meteo_actuel = "soleil.png"
     elif pression_atmo < 900:
-        meteo_actuel = "orage.jpg"
+        meteo_actuel = "orage.png"
     else: #elif pression_atmo < 1000:
-        meteo_actuel = "pluie.jpg"
+        meteo_actuel = "pluie.png"
 
     return ("Temps :", meteo_actuel)

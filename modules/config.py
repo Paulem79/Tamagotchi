@@ -7,6 +7,7 @@ running: bool = True
 ms_ecoule: int = 0
 mort: bool = False
 mort_raison: str = ""
+dae_en_cours: bool = False
 
 def tuer(raison: str):
   global mort, mort_raison
