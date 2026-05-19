@@ -12,11 +12,13 @@ import modules.sante as sante
 import modules.sport as sport
 import modules.DAE as DAE
 
+# Contient la liste des éléments cliquables, avec leur position, taille et action associée
 elements: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
 
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     """Crée l'écran de jeu"""
+    # Dire qu'on veut cette taille de fenêtre
     ecran = pg.display.set_mode(fenetre)
     return ecran
 
@@ -43,8 +45,7 @@ box of course)
 Dependency:
 a pygame version supporting pygame.transform (pygame-1.1+)
 """
-
-
+# Vous en occupez pas, c'est importé d'internet
 def aspect_scale(img: pg.Surface, bx: int, by: int):
     """Scales 'img' to fit into box bx/by.
     This method will retain the original image's aspect ratio"""
@@ -75,23 +76,28 @@ def aspect_scale(img: pg.Surface, bx: int, by: int):
 
 def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
     """Charge l'arrière plan de jeu"""
+    # Obtenir les dimensions de l'écran
     fenetre = (ecran.get_width(), ecran.get_height())
 
+    # Charger l'image et la redimensionner aux dimensions de la fenêtre
     background = pg.image.load(f"images/{nom}").convert()
     background = pg.transform.scale(background, fenetre)
 
-    # coller le rectangle par dessus en (0,0)
+    # coller l'arrière plan sur toute la fenêtre
     ecran.blit(background, (0, 0))
 
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
+    # Si mort, on charge l'image de mort
     image = "poyo_Idle.png"
     if mort:
         image = "poyo_dead.png"
-    
+
+    # Charger l'image et la redimensionner
     personnage = pg.image.load(f"images/{image}").convert_alpha()
     personnage = aspect_scale(personnage, 400, 400)
+    # coller le personnage sur l'écran
     ecran.blit(personnage, (200, 300))
 
 
@@ -126,28 +132,42 @@ def charger_bouton(
     # Enregistrer pour détection clics
     elements.append((position, taille, action))
 
-def barre_vie(ecran: pg.Surface, position: tuple[int, int], valeur: int, cbase:tuple[int,int,int], cmilieu: tuple[int, int, int], cfin:tuple[int,int,int]):
+def barre_etat(ecran: pg.Surface, position: tuple[int, int], valeur: int, cbase:tuple[int,int,int], cmilieu: tuple[int, int, int], cfin:tuple[int,int,int]):
+    # Position x et y de la jauge depuis le tuple
     jauge_x, jauge_y = position
+    # Largeur de la jauge (en x)
     jauge_largeur = 30
+    # Hauteur de la jauge (en y)
     jauge_hauteur = 300
+    # Contenu de la jauge, entre 0 et 100 en général
+    # TODO: On laisse déborder les jauges car c'est drôle ? sinon, mettre min(valeur / 100, 1)
     ratio = valeur / 100
+    # Hauteur du contenu de la jauge
     hauteur_dynamique = jauge_hauteur * ratio
+    # Couleur de la jauge, si > 60%, si > 30%, autre couleur sinon
     couleur_jauge = cbase if ratio > 0.6 else cmilieu if ratio > 0.3 else cfin
 
+    # Position y du contenu de la jauge, un offset pour que la jauge soit en bas
     jauge_y_dynamique = jauge_y + (jauge_hauteur - hauteur_dynamique)
-    
+
+    # Dessiner le fond de la jauge
     pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur))
+    # Dessiner le contenu de la jauge
     pg.draw.rect(ecran, couleur_jauge, (jauge_x,jauge_y_dynamique, jauge_largeur, hauteur_dynamique))
+    # Dessiner le contour de la jauge
     pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur), 2)
 
 
 def actionner_boutons(pos: tuple[int, int]):
     """Actionne les boutons en fonction de la position de la souris"""
     for element in elements:
+        # Récupérer la position, la taille et l'action de l'élément
         position, taille, action = element
+        # Vérifier si la position de la souris est dans l'élément
         if (position[0] <= pos[0] < position[0] + taille[0]) and (
             position[1] <= pos[1] < position[1] + taille[1]
         ):
+            # Exécuter l'action
             action()
             break
 
@@ -170,13 +190,17 @@ async def game_loop():
     
         # Les évènements
         for event in pg.event.get():
+            # Si on ferme la fenêtre, on arrête le jeu
             if event.type == QUIT:
                 jouer = False
+            # Si on clique, on actionne les boutons sous la souris
             if event.type == MOUSEBUTTONDOWN:
                 actionner_boutons(event.pos)
 
+        # L'arrière plan se basera sur ce que nous renvoie le module de météo
         arriere_plan = main.obtenir_resultat("Temps :")
 
+        # Si la météo ne s'est pas encore exécutée, on met une image par défaut
         if arriere_plan == None:
             arriere_plan = "background.jpg"
 
@@ -186,12 +210,14 @@ async def game_loop():
         charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
         charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
         charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
+        # Si le jeu demande le défibrilatteur, on le met
         if DAE.demande_defibrilatteur:
             charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner)
 
-        barre_vie(ecran, (750, 300), sport.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
-        barre_vie(ecran, (700, 300), nourriture.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
-        barre_vie(ecran, (650, 300), eau.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
+        # On met les barres d'état
+        barre_etat(ecran, (750, 300), sport.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
+        barre_etat(ecran, (700, 300), nourriture.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
+        barre_etat(ecran, (650, 300), eau.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
 
         # Mettre à jour rendu
         pg.display.update()
@@ -207,5 +233,6 @@ async def run_all():
     await asyncio.gather(main.main(), game_loop())
 
 
+# Tout exécuter si on est le fichier principal (python game.py)
 if __name__ == "__main__":
     asyncio.run(run_all())
