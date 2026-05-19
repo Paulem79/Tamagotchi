@@ -26,6 +26,6 @@ def temps():
     elif pression_atmo < 900:
         meteo_actuel = "orage.jpg"
     else: #elif pression_atmo < 1000:
-        meteo_actuel = "pluie.png"
+        meteo_actuel = "pluie.jpg"
 
     return ("Temps :", meteo_actuel)

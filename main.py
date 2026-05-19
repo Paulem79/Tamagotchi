@@ -1,6 +1,6 @@
 import time
 import asyncio
-from typing import Callable
+from typing import Any, Callable
 
 from modules import modules
 
@@ -8,7 +8,7 @@ import modules.DAE as DAE
 import modules.commande as commande
 import modules.config as config
 
-resultats: dict[str, config.T] = {}
+resultats: dict[str, Any] = {}
 derniere_execution: dict[Callable, int] = {}
 
 def obtenir_resultat(nom: str):

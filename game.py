@@ -170,7 +170,7 @@ async def game_loop():
         charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
         charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
         if DAE.demande_defibrilatteur:
-            charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner())
+            charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner)
 
         # Mettre à jour rendu
         pg.display.update()
@@ -188,3 +188,14 @@ async def run_all():
 
 if __name__ == "__main__":
     asyncio.run(run_all())
+
+def barre_vie():
+    jauge_x = 250
+    jauge_y = 250
+    jauge_largeur_max = 300
+    jauge_hauteur = 30
+    BLANC = (255, 255, 255)
+    GRIS_FONCE = (50, 50, 50)
+    VERT = (0, 255, 0)
+    ROUGE = (255, 0, 0)
+    
