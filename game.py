@@ -160,7 +160,9 @@ async def game_loop():
     # Obligé pour écrire texte
     pg.font.init()
     # Idem, obligé pour lire musique
-    pg.mixer.init()
+    # Si audio, pas sur replit par exemple
+    if pg.mixer.get_init() is not None:
+        pg.mixer.init()
     
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)

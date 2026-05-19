@@ -29,6 +29,9 @@ sons = {
 }
 
 def jouer_son(nom: str):
+    if pg.mixer.get_init() is None:
+        return
+
     if nom in sons:
         fichier = sons[nom]
 
