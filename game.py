@@ -165,6 +165,9 @@ async def game_loop():
 
     jouer = True
     while jouer:
+        # Vider les éléments pour plus détruire les performances
+        elements.clear()
+    
         # Les évènements
         for event in pg.event.get():
             if event.type == QUIT:
