@@ -1,12 +1,14 @@
 import random
-import modules.eau as water
-import modules.config as config
-
+import config
 
 # fonction de besoin accentu la difficuler et le réalisme
+# Léo t'étais investi dans le commentaire ahaha
 def pypy():
     if random.randint(0, 5) == 0:
-        water.eau -= random.randint(15, 20)
+        config.eau -= random.randint(15, 20)
         return ("Pipi :", "pipi")
-    if water.eau < 1:
+    if config.eau < 1:
         config.tuer("Mort de soif !")
+
+    # Pipi, on ne renvoit rien
+    return None

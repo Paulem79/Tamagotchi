@@ -4,6 +4,7 @@ import modules.sante as sante
 import aioconsole
 import modules.sport as sport
 import modules.DAE as DAE
+import config
 
 async def action():
     a = await aioconsole.ainput('')
@@ -19,5 +20,8 @@ async def action():
         sante.guerir()
     elif a == "sport":
         sport.sport()
-    
-    await action() # se rappelle soi meme 
+
+    if config.jeu_en_cours:
+        await action()
+    else:
+        return

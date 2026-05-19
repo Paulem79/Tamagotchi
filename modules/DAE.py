@@ -1,23 +1,14 @@
-import main
-import modules.config as config
-import modules.nourriture as nourriture
-import modules.eau as water
-import modules.sante as sante
-import modules.sport as sport
 import random
 
-demande_defibrilatteur: bool = False
-actionné: bool = False
+import config
+import main
+
 
 def actionner():
-    global actionné
-    actionné = True
+    config.dae_actionne = True
 
 async def DAE() -> bool:
-    global demande_defibrilatteur
-    global actionné
-
-    demande_defibrilatteur = True
+    config.demande_defibrilatteur = True
 
     temps_depart = config.ms_ecoule
     derniere_seconde_affichee = 0
@@ -32,21 +23,21 @@ async def DAE() -> bool:
             print("Actionne le défibrillateur !")
             derniere_seconde_affichee = seconde_actuelle
 
-        if actionné:
+        if config.dae_actionne:
             break
 
-    if actionné:
+    if config.dae_actionne:
         print("Défibrillateur actionné !")
-        actionné = False
-        demande_defibrilatteur = False
+        config.dae_actionne = False
+        config.demande_defibrilatteur = False
 
         if random.randint(0, 100) <= 35:
             config.mort = False
             config.mort_raison = ""
-            nourriture.faim = 50
-            water.eau = 30
-            sante.malade = False
-            sport.etat_de_sante = 30
+            config.faim = 50
+            config.eau = 30
+            config.malade = False
+            config.etat_de_sante = 30
             print("en vie !")
             return False  # Pas complètement mort
         else:
@@ -54,6 +45,6 @@ async def DAE() -> bool:
             return True   # Complètement mort
     else:
         # Les 5 secondes sont passées sans action de l'utilisateur
-        demande_defibrilatteur = False
+        config.demande_defibrilatteur = False
         print("Échec (Temps écoulé).")
         return True       # Complètement mort

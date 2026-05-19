@@ -6,7 +6,7 @@ from modules import modules
 
 import modules.DAE as DAE
 import modules.commande as commande
-import modules.config as config
+import config
 
 resultats: dict[str, Any] = {}
 derniere_execution: dict[Callable, int] = {}
@@ -14,7 +14,7 @@ derniere_execution: dict[Callable, int] = {}
 def obtenir_resultat(nom: str):
     return resultats.get(nom, None)
 
-def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
+def executer(module: Callable[[], tuple[str, Any]], toutes_les: int):
     """
     Exécute un module si l'intervalle 'toutes_les' en ms est dépassé,
     en gérant les sauts de temps causés par la boucle asynchrone.
@@ -28,15 +28,15 @@ def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
 
     # Si plus grand ou égal à intervalle requise
     if temps_ecoule >= toutes_les:
-        executé = module()
+        resultat_module = module()
 
         # Met à jour le moment de la dernière exécution
         # En soustrayant le "surplus" (temps_ecoule - toutes_les), on reste précis
         # même s'il y a eu un léger retard.
         derniere_execution[module] = config.ms_ecoule - (temps_ecoule % toutes_les)
 
-        if executé is not None:
-            nom, value = executé
+        if resultat_module is not None:
+            nom, value = resultat_module
 
             if nom is None:
                 nom = "Module inconnu :"
@@ -45,16 +45,31 @@ def executer(module: Callable[[], tuple[str, config.T]], toutes_les: int):
                 resultats[nom] = value
                 print(nom, value)
 
+# gérer la fin du DAE en arrière-plan
+async def gerer_fin_dae():
+    completement_mort = await DAE.DAE()
+
+    if completement_mort:
+        # Print la raison de la mort s'il y en a une
+        if config.mort_raison != "":
+            print(config.mort_raison)
+        else:
+            # Sinon, juste mort
+            print("Mort.")
+        # Arrêter le jeu de manière clean dcp
+        config.jeu_en_cours = False
+    config.dae_en_cours = False
+
 async def attente_ms():
     """On veut attendre 1 ms pour éviter de tout casser"""
     await asyncio.sleep(0.001)
 
 async def main():
-    asyncio.create_task(commande.action())
+    _commandes = asyncio.create_task(commande.action())
 
     dernier_temps = time.perf_counter()
 
-    while config.running:
+    while config.jeu_en_cours:
         await asyncio.sleep(0.001)
 
         # Vrai temps écoulé avec time dcp
@@ -67,24 +82,11 @@ async def main():
         config.ms_ecoule += ms_passees
         dernier_temps = maintenant
 
-        # Dans ton fichier main.py, à l'intérieur du "while config.running:"
-
         if config.mort and not config.dae_en_cours:
             config.dae_en_cours = True
 
-            # Fonction locale pour gérer la fin du DAE en arrière-plan
-            async def gerer_fin_dae():
-                completement_mort = await DAE.DAE()
-                if completement_mort:
-                    if not config.mort_raison == "":
-                        print(config.mort_raison)
-                    else:
-                        print("Mort.")
-                    config.running = False  # Arrête le jeu proprement
-                config.dae_en_cours = False
-
-            # On lance le DAE en arrière-plan sans bloquer la boucle de temps !
-            asyncio.create_task(gerer_fin_dae())
+            # DAE en arrière-plan pour éviter de tout bloquer
+            _tache = asyncio.create_task(gerer_fin_dae())
 
         # Exécute les modules chargés
         for fonction, tous_les in modules:

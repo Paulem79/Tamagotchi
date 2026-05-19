@@ -1,20 +1,14 @@
 import random
-#import modules.sport as sport
 
-malade: bool = False
+import config
 
 
 # fonction de santé
-# TODO: Rajouter la possibilité de se soigner
 def maladie() -> tuple[str, bool]:
-    # TODO: Régler circular import par migration dans config.py
-    #etat_de_sante = sport.etat_de_sante
-    #if random.randint(0, etat_de_sante) == 0:
-    #    global malade
-    #    malade = True
-    return ("Malade :", malade)
+    if random.randint(0, config.etat_de_sante) == 0:
+        config.malade = True
+    return ("Malade :", config.malade)
 
 
 def guerir():
-    global malade
-    malade = False
+    config.malade = False

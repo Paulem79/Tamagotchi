@@ -1,13 +1,12 @@
 from typing import Callable, Any
-import random
-import modules.nourriture as nourriture
-import modules.sante as sante
-import modules.pi as pi
+
 import modules.eau as eau
-import modules.sport as sport
-import config
-import modules.score as score
 import modules.meteo as meteo
+import modules.nourriture as nourriture
+import modules.pi as pi
+import modules.sante as sante
+import modules.score as score
+import modules.sport as sport
 
 # Tous les modules, et tous les combien de secondes ils s'exécutent
 # Les fonctions peuvent retourner ce qu'elles veulent

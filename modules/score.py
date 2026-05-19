@@ -1,6 +1,6 @@
-score = 0
+import config
+
 
 def score_decompte():
-  global score
-  score = score + 1 
-  return ("Score :", score)
+  config.score = config.score + 1
+  return ("Score :", config.score)
