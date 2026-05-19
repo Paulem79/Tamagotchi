@@ -70,9 +70,9 @@ def charger_bouton(
     button = pg.transform.scale(button, taille)
 
     # Créer texte Arial 20px
-    police = pg.font.SysFont("Arial", 20)
-    # Rendu texte en noir + anti aliasing
-    texte_surface = police.render(texte, True, (0, 0, 0))
+    police = pg.font.Font('polices/Minecraft.ttf', 20)
+    # Rendu texte en noir
+    texte_surface = police.render(texte, False, (0, 0, 0))
 
     # Récupérer dimensions texte
     texte_rect = texte_surface.get_rect()
@@ -141,11 +141,37 @@ async def game_loop():
     config.fenetre_ouverte = True
 
     while config.fenetre_ouverte:
-        # Vider les éléments pour plus détruire les performances
-        # TODO: Faire fonctionner mdrr
-        #boutons.clear()
-    
-        # Les évènements
+        # Détruit les boutons existants pour éviter de les dupliquer
+        boutons.clear()
+
+        # L'arrière plan se basera sur ce que nous renvoie le module de météo
+        arriere_plan = main.obtenir_resultat("Temps :")
+
+        # Si la météo ne s'est pas encore exécutée, on met une image par défaut
+        if arriere_plan is None:
+            arriere_plan = "background.jpg"
+
+        charger_arriere_plan(ecran, arriere_plan)
+        charger_personnage(ecran, config.mort)
+
+        if config.jeu_en_cours:
+            charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
+            charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
+            charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
+            charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
+            # Si le jeu demande le défibrilatteur, on le met
+            if config.demande_defibrillateur and config.mort:
+                charger_bouton(ecran, (460, 30), (100, 50), "Defibrilatteur", DAE.actionner)
+
+            # On met les barres d'état
+            barre_etat(ecran, (750, 300), config.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
+            barre_etat(ecran, (700, 300), config.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
+            barre_etat(ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
+
+        # Mettre à jour rendu
+        pg.display.update()
+
+        # Evenements
         for event in pg.event.get():
             # Si on ferme la fenêtre, on arrête le jeu
             if event.type == QUIT:
@@ -153,31 +179,6 @@ async def game_loop():
             # Si on clique, on actionne les boutons sous la souris
             if event.type == MOUSEBUTTONDOWN:
                 actionner_boutons(event.pos)
-
-        # L'arrière plan se basera sur ce que nous renvoie le module de météo
-        arriere_plan = main.obtenir_resultat("Temps :")
-
-        # Si la météo ne s'est pas encore exécutée, on met une image par défaut
-        if arriere_plan == None:
-            arriere_plan = "background.jpg"
-
-        charger_arriere_plan(ecran, arriere_plan)
-        charger_personnage(ecran, config.mort)
-        charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
-        charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
-        charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
-        charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
-        # Si le jeu demande le défibrilatteur, on le met
-        if config.demande_defibrilatteur:
-            charger_bouton(ecran, (460, 30), (100, 50), "Défibrilatteur", DAE.actionner)
-
-        # On met les barres d'état
-        barre_etat(ecran, (750, 300), config.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
-        barre_etat(ecran, (700, 300), config.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
-        barre_etat(ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
-
-        # Mettre à jour rendu
-        pg.display.update()
 
         # Attente pour être avec la boucle principale
         await main.attente_ms()

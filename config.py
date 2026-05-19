@@ -13,16 +13,23 @@ def tuer(raison: str):
   mort = True
   mort_raison = raison
 
-def stopper_tout():
-  global jeu_en_cours, fenetre_ouverte
+def stopper_jeu():
+  global jeu_en_cours
   jeu_en_cours = False
+
+def stopper_fenetre():
+  global fenetre_ouverte
   fenetre_ouverte = False
+
+def stopper_tout():
+  stopper_jeu()
+  stopper_fenetre()
 
 # Variables de modules
 # DAE
 dae_en_cours: bool = False
 dae_actionne: bool = False
-demande_defibrilatteur: bool = False
+demande_defibrillateur: bool = False
 # Faim
 faim: int = 100
 # Eau

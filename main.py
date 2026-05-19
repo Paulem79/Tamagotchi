@@ -45,9 +45,11 @@ def executer(module: Callable[[], tuple[str, Any]], toutes_les: int):
                 resultats[nom] = value
                 print(nom, value)
 
-# gérer la fin du DAE en arrière-plan
 async def gerer_fin_dae():
-    completement_mort = await DAE.DAE()
+    """
+    gérer la fin du DAE en arrière-plan
+    """
+    completement_mort = await DAE.dae()
 
     if completement_mort:
         # Print la raison de la mort s'il y en a une
