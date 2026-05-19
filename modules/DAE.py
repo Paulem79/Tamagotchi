@@ -2,6 +2,7 @@ import random
 
 import config
 import main
+from jeu.musique import jouer_son
 
 
 def actionner():
@@ -42,6 +43,7 @@ async def dae() -> bool:
             if seconde_actuelle > derniere_seconde_affichee:
                 print("Actionne le défibrillateur !")
                 derniere_seconde_affichee = seconde_actuelle
+                jouer_son("dae")
 
             if config.dae_actionne:
                 break

@@ -1,30 +1,30 @@
 import random
 import config
+from jeu.musique import jouer_son
 
 
 def soif() -> tuple[str, int]:
     config.eau -= 1
 
     if config.eau < 1:
-          config.tuer("Mort de soif")
+        config.tuer("Mort de soif")
     if config.eau > 120:
-          config.tuer("coma hydraulique")
+        config.tuer("coma hydraulique")
 
     return ("Eau :", config.eau)
 
 
-
 def boire():
-      quantite = random.randint(10, 20)
+    jouer_son("boire")
 
-      if config.eau > 60 and config.eau < 100 :
-          print("Trop bu !")
-          config.eau += quantite
-          malade = True
-      if config.eau > 100:
-          print("Hic !")
-          config.eau -= random.randint(10, 25)
-      else:
-          config.eau += quantite
+    quantite = random.randint(10, 20)
 
-
+    if config.eau > 60 and config.eau < 100:
+        print("Trop bu !")
+        config.eau += quantite
+        config.malade = True
+    if config.eau > 100:
+        print("Hic !")
+        config.eau -= random.randint(10, 25)
+    else:
+        config.eau += quantite

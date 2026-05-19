@@ -10,12 +10,13 @@ import modules.sport as sport
 
 # Tous les modules, et tous les combien de secondes ils s'exécutent
 # Les fonctions peuvent retourner ce qu'elles veulent
-modules: list[tuple[Callable[[], tuple[str, Any]], int]] = [
-  (lambda: nourriture.nourriture(), 1500), # 0.15s
-  (lambda: sante.maladie(), 10000), # 10s
-  (lambda: pi.pypy(), 5000), # 5s
-  (lambda: eau.soif(), 2000), # 2s
-  (lambda: sport.sport_decompte(), 5000), # 5s
-  (lambda: score.score_decompte(), 1000), #1s
-  (lambda: meteo.temps(),10000), #10s
+# Format: (fonction, intervalle_ms, executer_au_demarrage)
+modules: list[tuple[Callable[[], tuple[str, Any]], int, bool]] = [
+  (lambda: nourriture.nourriture(), 1500, False), # 0.15s
+  (lambda: sante.maladie(), 10000, False), # 10s
+  (lambda: pi.pypy(), 5000, False), # 5s
+  (lambda: eau.soif(), 2000, False), # 2s
+  (lambda: sport.sport_decompte(), 5000, False), # 5s
+  (lambda: score.score_decompte(), 1000, False), #1s
+  (lambda: meteo.temps(), 10000, True), #10s et exécute au démarrage
 ]

@@ -11,17 +11,19 @@ import pygame as pg
 from pygame.constants import MOUSEBUTTONDOWN, QUIT
 
 import config
-from interface.aspect_scale import aspect_scale
+from jeu.aspect_scale import aspect_scale
 import main
 import modules.DAE as DAE
 import modules.eau as eau
 import modules.nourriture as nourriture
 import modules.sante as sante
 import modules.sport as sport
+from jeu.musique import jouer_son
 
 # Contient la liste des boutons, avec leur position, taille et action associée
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
+apres_mort_fini: bool = False
 
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     """Crée l'écran de jeu"""
@@ -127,12 +129,38 @@ def actionner_boutons(pos: tuple[int, int]):
             action()
             break
 
+def etat_malade(ecran: pg.Surface):
+    # Texte malade ! en bas à gauche
+    police = pg.font.Font('polices/Minecraft.ttf', 30)
+    texte_surface = police.render("Malade !", False, (255, 0, 0))
+    texte_rect = texte_surface.get_rect()
+    texte_rect.bottomleft = (10, 590)
+    ecran.blit(texte_surface, texte_rect)
+
+def apres_mort(ecran: pg.Surface):
+    # Texte GAME OVER
+    police = pg.font.Font('polices/Minecraft.ttf', 50)
+    texte_surface = police.render("GAME OVER", False, (255, 0, 0))
+    texte_rect = texte_surface.get_rect()
+    texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 60)
+    ecran.blit(texte_surface, texte_rect)
+
+    # Texte score
+    texte_surface = police.render(f"Score: {config.score}", False, (0, 0, 0))
+    texte_rect = texte_surface.get_rect()
+    texte_rect.center = (ecran.get_width() // 2, ecran.get_height() // 2)
+    ecran.blit(texte_surface, texte_rect)
+
 
 async def game_loop():
     """boucle de jeu en asynchrone (parallèle)"""
+    # Initialisation de pygame
+    global apres_mort_fini
     pg.init()
     # Obligé pour écrire texte
     pg.font.init()
+    # Idem, obligé pour lire musique
+    pg.mixer.init()
     
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)
@@ -159,7 +187,7 @@ async def game_loop():
             charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
             charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
             charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
-            # Si le jeu demande le défibrilatteur, on le met
+            # Si besoin d'afficher le défibrillateur et qu'on est mort, on met le bouton
             if config.demande_defibrillateur and config.mort:
                 charger_bouton(ecran, (460, 30), (100, 50), "Defibrilatteur", DAE.actionner)
 
@@ -167,6 +195,15 @@ async def game_loop():
             barre_etat(ecran, (750, 300), config.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
             barre_etat(ecran, (700, 300), config.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
             barre_etat(ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
+
+            if config.malade:
+                etat_malade(ecran)
+        elif not apres_mort_fini:
+            jouer_son("mort")
+            apres_mort_fini = True
+
+        if not config.jeu_en_cours:
+            apres_mort(ecran)
 
         # Mettre à jour rendu
         pg.display.update()

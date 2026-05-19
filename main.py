@@ -14,14 +14,18 @@ derniere_execution: dict[Callable, int] = {}
 def obtenir_resultat(nom: str):
     return resultats.get(nom, None)
 
-def executer(module: Callable[[], tuple[str, Any]], toutes_les: int):
+def executer(module: Callable[[], tuple[str, Any]], toutes_les: int, au_demarrage: bool = False):
     """
     Exécute un module si l'intervalle 'toutes_les' en ms est dépassé,
     en gérant les sauts de temps causés par la boucle asynchrone.
     """
     # Si jamais executé, on l'initialise
     if module not in derniere_execution:
-        derniere_execution[module] = config.ms_ecoule
+        # Si le module doit s'exécuter au démarrage, on force l'exécution immédiate
+        if au_demarrage:
+            derniere_execution[module] = config.ms_ecoule - toutes_les
+        else:
+            derniere_execution[module] = config.ms_ecoule
 
     # Calcul du temps depuis dernière exécution
     temps_ecoule = config.ms_ecoule - derniere_execution[module]
@@ -59,7 +63,7 @@ async def gerer_fin_dae():
             # Sinon, juste mort
             print("Mort.")
         # Arrêter le jeu de manière clean dcp
-        config.jeu_en_cours = False
+        config.stopper_jeu()
     config.dae_en_cours = False
 
 async def attente_ms():
@@ -91,8 +95,8 @@ async def main():
             _tache = asyncio.create_task(gerer_fin_dae())
 
         # Exécute les modules chargés
-        for fonction, tous_les in modules:
-            executer(fonction, tous_les)
+        for fonction, tous_les, au_demarrage in modules:
+            executer(fonction, tous_les, au_demarrage)
 
 if __name__ == "__main__":
 
