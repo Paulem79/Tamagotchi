@@ -2,6 +2,8 @@ from typing import Callable, TypeVar, Generic
 
 T = TypeVar('T')
 
+pression_atmo: int = 1000
+
 # Variables importantes du jeu
 running: bool = True
 ms_ecoule: int = 0

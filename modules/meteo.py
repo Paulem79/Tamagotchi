@@ -1,6 +1,5 @@
 import random
-
-pression_atmo: int = 1000
+from config import pression_atmo
 
 
 def pression():
