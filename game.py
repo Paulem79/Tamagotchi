@@ -66,7 +66,24 @@ def charger_bouton(
     texte: str,
     action: Callable[[], None],
 ):
-    """Charge un bouton avec du texte centré sur l'écran"""
+    """Charge un bouton avec du texte centré sur l'écran et gère l'enfoncement"""
+    # Récupérer la position x, y et la taille
+    x, y = position
+    largeur, hauteur = taille
+
+    # Obtenir la position de la souris et l'état des clics
+    souris_pos = pg.mouse.get_pos()
+    clic_souris = pg.mouse.get_pressed()
+
+    # Vérifier si la souris survole le bouton et que le clic gauche est enfoncé
+    enfonce = False
+    if (x <= souris_pos[0] < x + largeur) and (y <= souris_pos[1] < y + hauteur):
+        if clic_souris[0]:
+            enfonce = True
+
+    # Si enfoncé, on décale la position de rendu de 3 pixels
+    position_rendu = (x + 3, y + 3) if enfonce else (x, y)
+
     # Charger et redimensionner bouton
     button = pg.image.load("images/button.png").convert_alpha()
     button = pg.transform.scale(button, taille)
@@ -84,8 +101,8 @@ def charger_bouton(
     # Mettre texte sur bouton
     button.blit(texte_surface, texte_rect)
 
-    # Mettre image + texte sur ecran
-    ecran.blit(button, position)
+    # Mettre image + texte sur ecran à la position calculée
+    ecran.blit(button, position_rendu)
 
     # Enregistrer pour détection clics
     boutons.append((position, taille, action))
@@ -215,9 +232,10 @@ async def game_loop():
             # Si on ferme la fenêtre, on arrête le jeu
             if event.type == QUIT:
                 config.stopper_tout()
-            # Si on clique, on actionne les boutons sous la souris
-            if event.type == MOUSEBUTTONDOWN:
-                actionner_boutons(event.pos)
+            # Si on relâche le clic gauche, on actionne les boutons sous la souris
+            if event.type == pg.MOUSEBUTTONUP:
+                if event.button == 1:
+                    actionner_boutons(event.pos)
 
         # Attente pour être avec la boucle principale
         await main.attente_ms()
