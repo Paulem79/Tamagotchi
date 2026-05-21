@@ -73,7 +73,7 @@ async def gerer_fin_dae():
 
 
 async def main():
-    while config.pres_jeu:
+    while config.pres_jeu and config.jeu_en_cours:
         await attente_ms()
 
     print("Le jeu commence !")

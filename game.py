@@ -239,7 +239,7 @@ def konami(event: pg.event.Event):
     # Si la touche appuyée correspond à la prochaine touche du code, on continue, sinon on réinitialise
     if event.type == pg.KEYDOWN:
         if event.key == CODE[index]:
-            # Petit print pour indiquer toussa toussa (pas le verbe + mal orthographié hehe)
+            # Petit print pour indiquer tout ça tout ça
             print(f"Touche correcte pour le code Konami ({index + 1}/{len(CODE)})")
             code.append(event.key)
             index += 1
@@ -288,16 +288,19 @@ async def game_loop():
 
     # Menu principal
     while config.fenetre_ouverte and config.pres_jeu:
-        police = pg.font.Font("polices/Minecraft.ttf", 20)
-
         # Fond d'écran du menu principal
         charger_arriere_plan(ecran, "soleil.png")
 
         # Titre du jeu
         charger_image(ecran, "titre.png", (666, 375), (ecran.get_width() // 2 - 333, 100))
         # Texte dessus
-        texte_surface = police.render("Bienvenue dans le jeu du Poyo !", False, (0, 0, 0))
-        ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2, 80))
+        police = pg.font.Font("polices/Minecraft.ttf", 80)
+        texte_surface = police.render("POYO !", False, (255, 0, 0))
+        ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2 + 30, 170))
+        # Sous texte
+        police = pg.font.Font("polices/Minecraft.ttf", 40)
+        texte_surface = police.render("Decouvre la souffrance !", False, (255, 0, 0))
+        ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2, 380))
 
         # Bouton jouer
         charger_bouton(ecran, (20, 30), (100, 50), "Jouer", lambda: config.jouer())
@@ -307,15 +310,16 @@ async def game_loop():
         # Dessiner le slider de volume
         vol = get_volume_musique()
         # Dessiner le fond du slider
-        pg.draw.rect(ecran, (100, 100, 100), slider_bg_rect)
+        pg.draw.rect(ecran, (255, 100, 100), slider_bg_rect)
         # Position du bouton du slider en fonction du volume
         slider_btn_x = slider_bg_rect.x + int(vol * slider_bg_rect.width)
         # Créer le rectangle du bouton du slider, centré sur la position calculée, avec une taille de 10x30
         slider_btn_rect = pg.Rect(slider_btn_x - 5, slider_bg_rect.y - 10, 10, 30)
-        pg.draw.rect(ecran, (200, 200, 200), slider_btn_rect)
+        pg.draw.rect(ecran, (255, 200, 200), slider_btn_rect)
 
-        texte_surface = police.render("Volume musique", False, (0, 0, 0))
-        ecran.blit(texte_surface, (slider_bg_rect.x, slider_bg_rect.y - 25))
+        police = pg.font.Font("polices/Minecraft.ttf", 20)
+        texte_surface = police.render("Musique", False, (0, 0, 0))
+        ecran.blit(texte_surface, (slider_bg_rect.x, slider_bg_rect.y - 30))
 
         pg.display.update()
 

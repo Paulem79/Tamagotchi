@@ -16,7 +16,7 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
   - [x] Base PyGame
   - [x] Boutons pour tous les états
   - [x] Affichage personnage
-  - [ ] Menu principal
+  - [x] Menu principal
   - [ ] En dernier : amélioration avec effets
 - [x] Système de score
 - [x] Musique et sound effect
