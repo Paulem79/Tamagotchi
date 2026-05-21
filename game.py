@@ -27,6 +27,7 @@ boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 IMAGES: dict[str, pg.Surface | None] = {
     "bouton": None,
     "poyo_idle": None,
+    "poyo_sick": None,
     "poyo_dead": None
 }
 
@@ -59,6 +60,8 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     personnage = IMAGES["poyo_idle"]
     if mort:
         personnage = IMAGES["poyo_dead"]
+    elif config.malade:
+        personnage = IMAGES["poyo_sick"]
 
     if personnage is None:
         return
@@ -169,15 +172,6 @@ def actionner_boutons(pos: tuple[int, int]):
             break
 
 
-def etat_malade(ecran: pg.Surface):
-    # Texte malade ! en bas à gauche
-    police = pg.font.Font("polices/Minecraft.ttf", 30)
-    texte_surface = police.render("Malade !", False, (255, 0, 0))
-    texte_rect = texte_surface.get_rect()
-    texte_rect.bottomleft = (10, 590)
-    ecran.blit(texte_surface, texte_rect)
-
-
 def apres_mort(ecran: pg.Surface):
     # Texte GAME OVER
     police = pg.font.Font("polices/Minecraft.ttf", 50)
@@ -215,6 +209,7 @@ async def game_loop():
     IMAGES["bouton"] = pg.image.load("images/button.png").convert_alpha()
     IMAGES["poyo_idle"] = pg.image.load("images/poyo_Idle.png").convert_alpha()
     IMAGES["poyo_dead"] = pg.image.load("images/poyo_dead.png").convert_alpha()
+    IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
 
     while config.fenetre_ouverte:
         # Détruit les boutons existants pour éviter de les dupliquer
@@ -262,8 +257,6 @@ async def game_loop():
                 ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60)
             )
 
-            if config.malade:
-                etat_malade(ecran)
         elif not apres_mort_fini:
             jouer_son("mort")
             apres_mort_fini = True
@@ -280,9 +273,13 @@ async def game_loop():
             if event.type == QUIT:
                 config.stopper_tout()
             # Si on relâche le clic gauche, on actionne les boutons sous la souris
-            if event.type == pg.MOUSEBUTTONUP:
-                if event.button == 1:
-                    actionner_boutons(event.pos)
+            if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                actionner_boutons(event.pos)
+            # Touche H pressée
+            if event.type == pg.KEYDOWN and event.key == pg.K_h:
+                config.activer_difficile()
+            if event.type == pg.KEYDOWN and event.key == pg.K_l:
+                config.lyderic == True
 
         # Attente pour être avec la boucle principale
         await main.attente_ms()

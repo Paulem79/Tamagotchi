@@ -19,6 +19,8 @@ def executer(module: Callable[[], tuple[str, Any]], toutes_les: int, au_demarrag
     Exécute un module si l'intervalle 'toutes_les' en ms est dépassé,
     en gérant les sauts de temps causés par la boucle asynchrone.
     """
+    # Multiplier pour la difficulté, afin d'avoir les modules qui s'exécutent de plus en plus rapidement
+    toutes_les *= config.multiplicateur_module()
     # Si jamais executé, on l'initialise
     if module not in derniere_execution:
         # Si le module doit s'exécuter au démarrage, on force l'exécution immédiate
@@ -89,6 +91,7 @@ async def main():
         dernier_temps = maintenant
 
         if config.mort and not config.dae_en_cours:
+            print(f"DAE actif pour la raison: {config.mort_raison}")
             config.dae_en_cours = True
 
             # DAE en arrière-plan pour éviter de tout bloquer

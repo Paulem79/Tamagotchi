@@ -1,17 +1,43 @@
+import math
+
 pression_atmo: int = 1000
 
 # Variables importantes du jeu
 jeu_en_cours: bool = True
 fenetre_ouverte: bool = False
+difficile: bool = False
+lyderic: bool = False
 
 ms_ecoule: int = 0
 mort: bool = False
 mort_raison: str = ""
 
+def multiplicateur_drainage():
+  if not difficile:
+    return 1
+  return math.sqrt(score_pour_multiplicateur())
+
+def multiplicateur_module():
+  if not difficile:
+    return 1
+  return min(1, 1/score_pour_multiplicateur())
+
+def score_pour_multiplicateur():
+  return score / 10
+
 def tuer(raison: str):
   global mort, mort_raison
   mort = True
   mort_raison = raison
+
+def activer_difficile():
+  global difficile
+  if difficile:
+    difficile = False
+    print("Mode difficile désactivé !")
+  else:
+    difficile = True
+    print("Mode difficile activé !")
 
 def stopper_jeu():
   global jeu_en_cours

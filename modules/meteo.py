@@ -1,5 +1,6 @@
 import random
 import config
+from modules.depression import depression
 
 def pression():
     if config.pression_atmo < 1000:
@@ -20,6 +21,9 @@ def temps():
         meteo_actuel = "soleil.png"
     elif config.pression_atmo < 900:
         meteo_actuel = "orage.png"
+        depression()
+        if random.randint(0,1000)==0:
+            config.tuer("mort de la foudre")
     else: #elif config.pression_atmo < 1000:
         meteo_actuel = "pluie.png"
 

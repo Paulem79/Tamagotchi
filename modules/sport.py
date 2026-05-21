@@ -5,7 +5,7 @@ from jeu.musique import jouer_son
 
 
 def sport_decompte():
-    config.etat_de_sante = config.etat_de_sante - 1
+    config.etat_de_sante = config.etat_de_sante - (random.randint(5,20))
     print("etat de sante :", config.etat_de_sante)
 
 

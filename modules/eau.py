@@ -8,7 +8,7 @@ def soif() -> tuple[str, int]:
 
     if config.eau < 1:
         config.tuer("Mort de soif")
-    if config.eau > 120:
+    if config.eau > 110:
         config.tuer("coma hydraulique")
 
     return ("Eau :", config.eau)
@@ -22,7 +22,8 @@ def boire():
     if config.eau > 60 and config.eau < 100:
         print("Trop bu !")
         config.eau += quantite
-        config.malade = True
+        if random.randint(0,1)==0:
+            config.malade = True
     if config.eau > 100:
         print("Hic !")
         config.eau -= random.randint(10, 25)
