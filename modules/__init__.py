@@ -7,6 +7,7 @@ import modules.pi as pi
 import modules.sante as sante
 import modules.score as score
 import modules.sport as sport
+import modules.mort as mort
 
 # Tous les modules, et tous les combien de secondes ils s'exécutent
 # Les fonctions peuvent retourner ce qu'elles veulent
@@ -18,5 +19,6 @@ modules: list[tuple[Callable[[], tuple[str, Any]], int, bool]] = [
   (pi.pypy, 5000, False), # 5s
   (eau.soif, 2000, False), # 2s
   (score.score_decompte, 1000, False), #1s
-  (meteo.temps, 10000, True), #10s et exécute au démarrage
+  (meteo.temps, 10000, True),
+  (mort.mort,100,False),#10s et exécute au démarrage
 ]

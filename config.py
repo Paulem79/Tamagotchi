@@ -25,6 +25,10 @@ def multiplicateur_module():
 def score_pour_multiplicateur():
   return score / 10
 
+def lyderication():
+  global lyderic
+  lyderic = fenetre_ouverte
+
 def tuer(raison: str):
   global mort, mort_raison
   mort = True

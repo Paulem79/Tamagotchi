@@ -28,7 +28,8 @@ IMAGES: dict[str, pg.Surface | None] = {
     "bouton": None,
     "poyo_idle": None,
     "poyo_sick": None,
-    "poyo_dead": None
+    "poyo_dead": None,
+    "lyderic": None
 }
 
 apres_mort_fini: bool = False
@@ -56,10 +57,13 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
+    print(f"lyderic: {config.lyderic}, mort: {mort}")
     # Si mort, on charge l'image de mort
     personnage = IMAGES["poyo_idle"]
     if mort:
         personnage = IMAGES["poyo_dead"]
+        if config.lyderic:
+            personnage = IMAGES["lyderic"]
     elif config.malade:
         personnage = IMAGES["poyo_sick"]
 
@@ -210,6 +214,7 @@ async def game_loop():
     IMAGES["poyo_idle"] = pg.image.load("images/poyo_Idle.png").convert_alpha()
     IMAGES["poyo_dead"] = pg.image.load("images/poyo_dead.png").convert_alpha()
     IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
+    IMAGES["lyderic"] = pg.image.load("images/lyderic.png").convert_alpha()
 
     while config.fenetre_ouverte:
         # Détruit les boutons existants pour éviter de les dupliquer
@@ -279,7 +284,8 @@ async def game_loop():
             if event.type == pg.KEYDOWN and event.key == pg.K_h:
                 config.activer_difficile()
             if event.type == pg.KEYDOWN and event.key == pg.K_l:
-                config.lyderic == True
+                print("Lyderic activé !")
+                config.lyderication()
 
         # Attente pour être avec la boucle principale
         await main.attente_ms()
