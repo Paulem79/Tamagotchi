@@ -23,7 +23,7 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [x] Système de difficulté
 - [ ] Options du jeu
 - [ ] Top joueurs avec API sur mon serveur
-- [x] Ajouter Lidérick en personnage jouable grâce au code konami
+- [x] Ajouter L... ? en personnage jouable grâce au code konami
 - [ ] Plusieurs tamagotchi ?
 - [ ] Système de sauvegarde
 - [ ] Ajouter des batailles de Tamagotchi

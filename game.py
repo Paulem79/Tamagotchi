@@ -18,6 +18,7 @@ import modules.nourriture as nourriture
 import modules.sante as sante
 import modules.sport as sport
 from jeu.aspect_scale import aspect_scale
+from jeu.deobfuscateur import deobfusquer
 from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
 
 # Contient la liste des boutons, avec leur position, taille et action associée
@@ -277,7 +278,7 @@ async def game_loop():
     IMAGES["poyo_idle"] = pg.image.load("images/poyo_Idle.png").convert_alpha()
     IMAGES["poyo_dead"] = pg.image.load("images/poyo_dead.png").convert_alpha()
     IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
-    IMAGES["lejedupandu"] = pg.image.load("images/lejedupandu.png").convert_alpha()
+    IMAGES["lejedupandu"] = pg.image.load(deobfusquer("images/lejedupandu.png")).convert_alpha()
 
     jouer_musique()
 
