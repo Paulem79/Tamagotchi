@@ -6,7 +6,7 @@ pression_atmo: int = 1000
 jeu_en_cours: bool = True
 fenetre_ouverte: bool = False
 difficile: bool = False
-lyderic: bool = False
+lejedupandu: bool = False
 
 ms_ecoule: int = 0
 mort: bool = False
@@ -25,9 +25,9 @@ def multiplicateur_module():
 def score_pour_multiplicateur():
   return score / 10
 
-def lyderication():
-  global lyderic
-  lyderic = fenetre_ouverte
+def lejedupandujaje():
+  global lejedupandu
+  lejedupandu = fenetre_ouverte
 
 def tuer(raison: str):
   global mort, mort_raison
