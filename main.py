@@ -73,6 +73,8 @@ async def attente_ms():
     await asyncio.sleep(0.001)
 
 async def main():
+    while config.pres_jeu:
+        await asyncio.sleep(0.001)
     _commandes = asyncio.create_task(commande.action())
 
     dernier_temps = time.perf_counter()

@@ -38,7 +38,7 @@ apres_mort_fini: bool = False
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     """Crée l'écran de jeu"""
     # Dire qu'on veut cette taille de fenêtre
-    ecran = pg.display.set_mode(fenetre)
+    ecran = pg.display.set_mode(fenetre, pg.RESIZABLE)
     return ecran
 
 
@@ -69,10 +69,12 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     if personnage is None:
         return
 
+    taille = (400, 400)
+
     # redimensionner l'image du personnage
-    personnage = aspect_scale(personnage, 400, 400)
+    personnage = aspect_scale(personnage, taille[0], taille[1])
     # coller le personnage sur l'écran
-    ecran.blit(personnage, (200, 300))
+    ecran.blit(personnage, (ecran.get_width() // 2 - taille[0] // 2, ecran.get_height() - taille[1]))
 
 
 def charger_bouton(
@@ -128,18 +130,21 @@ def charger_bouton(
 
 def barre_etat(
     ecran: pg.Surface,
-    position: tuple[int, int],
+    offset_x: int,
     valeur: int,
     cbase: tuple[int, int, int],
     cmilieu: tuple[int, int, int],
     cfin: tuple[int, int, int],
 ):
-    # Position x et y de la jauge depuis le tuple
-    jauge_x, jauge_y = position
     # Largeur de la jauge (en x)
     jauge_largeur = 30
     # Hauteur de la jauge (en y)
     jauge_hauteur = 300
+    
+    # Position x et y de la jauge depuis le tuple
+    jauge_x = ecran.get_width() - offset_x
+    jauge_y = ecran.get_height() - jauge_hauteur
+    
     # Contenu de la jauge, entre 0 et 100 en général
     # TODO: On laisse déborder les jauges car c'est drôle ? sinon, mettre min(valeur / 100, 1)
     ratio = valeur / 100
@@ -182,6 +187,12 @@ def apres_mort(ecran: pg.Surface):
     police = pg.font.Font("polices/Minecraft.ttf", 50)
     texte_surface = police.render("GAME OVER", False, (255, 0, 0))
     texte_rect = texte_surface.get_rect()
+    texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 120)
+    ecran.blit(texte_surface, texte_rect)
+    
+    # Texte raison de mort
+    texte_surface = police.render(f"Vous etes mort de {config.mort_raison}", False, (0, 0, 0))
+    texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 60)
     ecran.blit(texte_surface, texte_rect)
 
@@ -217,7 +228,21 @@ async def game_loop():
     IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
     IMAGES["lejedupandu"] = pg.image.load("images/lejedupandu.png").convert_alpha()
 
-    while config.fenetre_ouverte:
+    while config.fenetre_ouverte and config.pres_jeu:
+        charger_arriere_plan(ecran, "background.jpg")
+        charger_bouton(ecran, (20, 30), (100, 50), "Jouer", lambda: config.jouer())
+        pg.display.update()
+
+        # Evenements
+        for event in pg.event.get():
+            # Si on ferme la fenêtre, on arrête le jeu
+            if event.type == QUIT:
+                config.stopper_tout()
+            # Si on relâche le clic gauche, on actionne les boutons sous la souris
+            if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+                actionner_boutons(event.pos)
+
+    while config.fenetre_ouverte and not config.pres_jeu:
         # Détruit les boutons existants pour éviter de les dupliquer
         boutons.clear()
 
@@ -232,20 +257,21 @@ async def game_loop():
         charger_personnage(ecran, config.mort)
 
         if config.jeu_en_cours:
-            charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
-            charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
-            charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
-            charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
+            if not config.mort:
+                charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
+                charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
+                charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
+                charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
             # Si besoin d'afficher le défibrillateur et qu'on est mort, on met le bouton
             if config.demande_defibrillateur and config.mort:
                 charger_bouton(
-                    ecran, (460, 30), (100, 50), "DAE", DAE.actionner
+                    ecran, (20, 30), (100, 50), "DAE", DAE.actionner
                 )
 
             # On met les barres d'état
             barre_etat(
                 ecran,
-                (750, 300),
+                50,
                 config.etat_de_sante,
                 (0, 255, 0),
                 (0, 150, 0),
@@ -253,14 +279,14 @@ async def game_loop():
             )
             barre_etat(
                 ecran,
-                (700, 300),
+                100,
                 config.faim,
                 (200, 150, 0),
                 (255, 255, 0),
                 (255, 0, 0),
             )
             barre_etat(
-                ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60)
+                ecran, 150, config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60)
             )
 
         elif not apres_mort_fini:
@@ -286,9 +312,6 @@ async def game_loop():
                 config.activer_difficile()
             if event.type == pg.KEYDOWN and event.key == pg.K_l:
                 config.lejedupandujaje()
-
-        # Attente pour être avec la boucle principale
-        await main.attente_ms()
 
     pg.quit()
 

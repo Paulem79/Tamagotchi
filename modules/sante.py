@@ -11,8 +11,15 @@ def maladie() -> tuple[str, bool]:
 
 
 def guerir():
-    config.malade = False
-    config.etat_de_sante = 100
-    config.faim -= 30
-    config.eau -= 30
-    print("Vous avez été soigné !")
+    if config.malade==True:
+        config.malade = False
+        config.etat_de_sante +=30
+        config.faim -= 30
+        config.eau -= 30
+        print("Vous avez été soigné !")
+    else:
+        config.malade = True
+        config.etat_de_sante = 50
+        config.faim -= 30
+        config.eau -= 30
+        print("Vous avez abusé des médoc !")

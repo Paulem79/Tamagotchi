@@ -1,12 +1,16 @@
 import math
 
-pression_atmo: int = 1000
-
 # Variables importantes du jeu
 jeu_en_cours: bool = True
 fenetre_ouverte: bool = False
 difficile: bool = False
 lejedupandu: bool = False
+
+pres_jeu: bool = True
+
+def jouer():
+  global pres_jeu
+  pres_jeu = False
 
 ms_ecoule: int = 0
 mort: bool = False
@@ -69,3 +73,5 @@ score = 0
 # Sante
 malade: bool = False
 etat_de_sante: int = 100
+# Météo
+pression_atmo: int = 1000
