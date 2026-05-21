@@ -23,7 +23,15 @@ from jeu.musique import jouer_son
 # Contient la liste des boutons, avec leur position, taille et action associée
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
+# Voir dans le début de game_loop
+IMAGES: dict[str, pg.Surface | None] = {
+    "bouton": None,
+    "poyo_idle": None,
+    "poyo_dead": None
+}
+
 apres_mort_fini: bool = False
+
 
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     """Crée l'écran de jeu"""
@@ -48,12 +56,14 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
     # Si mort, on charge l'image de mort
-    image = "poyo_Idle.png"
+    personnage = IMAGES["poyo_idle"]
     if mort:
-        image = "poyo_dead.png"
+        personnage = IMAGES["poyo_dead"]
 
-    # Charger l'image et la redimensionner
-    personnage = pg.image.load(f"images/{image}").convert_alpha()
+    if personnage is None:
+        return
+
+    # redimensionner l'image du personnage
     personnage = aspect_scale(personnage, 400, 400)
     # coller le personnage sur l'écran
     ecran.blit(personnage, (200, 300))
@@ -85,11 +95,11 @@ def charger_bouton(
     position_rendu = (x + 3, y + 3) if enfonce else (x, y)
 
     # Charger et redimensionner bouton
-    button = pg.image.load("images/button.png").convert_alpha()
+    button = IMAGES["bouton"]
     button = pg.transform.scale(button, taille)
 
     # Créer texte Arial 20px
-    police = pg.font.Font('polices/Minecraft.ttf', 20)
+    police = pg.font.Font("polices/Minecraft.ttf", 20)
     # Rendu texte en noir
     texte_surface = police.render(texte, False, (0, 0, 0))
 
@@ -107,7 +117,15 @@ def charger_bouton(
     # Enregistrer pour détection clics
     boutons.append((position, taille, action))
 
-def barre_etat(ecran: pg.Surface, position: tuple[int, int], valeur: int, cbase:tuple[int,int,int], cmilieu: tuple[int, int, int], cfin:tuple[int,int,int]):
+
+def barre_etat(
+    ecran: pg.Surface,
+    position: tuple[int, int],
+    valeur: int,
+    cbase: tuple[int, int, int],
+    cmilieu: tuple[int, int, int],
+    cfin: tuple[int, int, int],
+):
     # Position x et y de la jauge depuis le tuple
     jauge_x, jauge_y = position
     # Largeur de la jauge (en x)
@@ -128,7 +146,11 @@ def barre_etat(ecran: pg.Surface, position: tuple[int, int], valeur: int, cbase:
     # Dessiner le fond de la jauge
     pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur))
     # Dessiner le contenu de la jauge
-    pg.draw.rect(ecran, couleur_jauge, (jauge_x,jauge_y_dynamique, jauge_largeur, hauteur_dynamique))
+    pg.draw.rect(
+        ecran,
+        couleur_jauge,
+        (jauge_x, jauge_y_dynamique, jauge_largeur, hauteur_dynamique),
+    )
     # Dessiner le contour de la jauge
     pg.draw.rect(ecran, (0, 0, 0), (jauge_x, jauge_y, jauge_largeur, jauge_hauteur), 2)
 
@@ -146,17 +168,19 @@ def actionner_boutons(pos: tuple[int, int]):
             action()
             break
 
+
 def etat_malade(ecran: pg.Surface):
     # Texte malade ! en bas à gauche
-    police = pg.font.Font('polices/Minecraft.ttf', 30)
+    police = pg.font.Font("polices/Minecraft.ttf", 30)
     texte_surface = police.render("Malade !", False, (255, 0, 0))
     texte_rect = texte_surface.get_rect()
     texte_rect.bottomleft = (10, 590)
     ecran.blit(texte_surface, texte_rect)
 
+
 def apres_mort(ecran: pg.Surface):
     # Texte GAME OVER
-    police = pg.font.Font('polices/Minecraft.ttf', 50)
+    police = pg.font.Font("polices/Minecraft.ttf", 50)
     texte_surface = police.render("GAME OVER", False, (255, 0, 0))
     texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 60)
@@ -171,8 +195,8 @@ def apres_mort(ecran: pg.Surface):
 
 async def game_loop():
     """boucle de jeu en asynchrone (parallèle)"""
-    # Initialisation de pygame
     global apres_mort_fini
+    # Initialisation de pygame
     pg.init()
     # Obligé pour écrire texte
     pg.font.init()
@@ -180,12 +204,17 @@ async def game_loop():
     # Si audio, pas sur replit par exemple
     if pg.mixer.get_init() is not None:
         pg.mixer.init()
-    
+
     fenetre = (800, 600)
     ecran = creer_ecran(fenetre)
 
     pg.display.flip()
     config.fenetre_ouverte = True
+
+    # Améliore les performances en évitant de charger les images à chaque frame
+    IMAGES["bouton"] = pg.image.load("images/button.png").convert_alpha()
+    IMAGES["poyo_idle"] = pg.image.load("images/poyo_Idle.png").convert_alpha()
+    IMAGES["poyo_dead"] = pg.image.load("images/poyo_dead.png").convert_alpha()
 
     while config.fenetre_ouverte:
         # Détruit les boutons existants pour éviter de les dupliquer
@@ -208,12 +237,30 @@ async def game_loop():
             charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
             # Si besoin d'afficher le défibrillateur et qu'on est mort, on met le bouton
             if config.demande_defibrillateur and config.mort:
-                charger_bouton(ecran, (460, 30), (100, 50), "Defibrilatteur", DAE.actionner)
+                charger_bouton(
+                    ecran, (460, 30), (100, 50), "DAE", DAE.actionner
+                )
 
             # On met les barres d'état
-            barre_etat(ecran, (750, 300), config.etat_de_sante, (0, 255, 0), (0, 150, 0), (255, 0, 0))
-            barre_etat(ecran, (700, 300), config.faim, (200, 150, 0), (255, 255, 0), (255, 0, 0))
-            barre_etat(ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60))
+            barre_etat(
+                ecran,
+                (750, 300),
+                config.etat_de_sante,
+                (0, 255, 0),
+                (0, 150, 0),
+                (255, 0, 0),
+            )
+            barre_etat(
+                ecran,
+                (700, 300),
+                config.faim,
+                (200, 150, 0),
+                (255, 255, 0),
+                (255, 0, 0),
+            )
+            barre_etat(
+                ecran, (650, 300), config.eau, (0, 0, 255), (0, 255, 255), (255, 10, 60)
+            )
 
             if config.malade:
                 etat_malade(ecran)
