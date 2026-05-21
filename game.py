@@ -8,17 +8,17 @@ import asyncio
 from typing import Callable
 
 import pygame as pg
-from pygame.constants import MOUSEBUTTONDOWN, QUIT
+from pygame.constants import QUIT
 
 import config
-from jeu.aspect_scale import aspect_scale
 import main
 import modules.DAE as DAE
 import modules.eau as eau
 import modules.nourriture as nourriture
 import modules.sante as sante
 import modules.sport as sport
-from jeu.musique import jouer_son
+from jeu.aspect_scale import aspect_scale
+from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
 
 # Contient la liste des boutons, avec leur position, taille et action associée
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
@@ -46,13 +46,17 @@ def charger_arriere_plan(ecran: pg.Surface, nom: str) -> None:
     """Charge l'arrière plan de jeu"""
     # Obtenir les dimensions de l'écran
     fenetre = (ecran.get_width(), ecran.get_height())
+    charger_image(ecran, nom, fenetre, (0, 0))
 
-    # Charger l'image et la redimensionner aux dimensions de la fenêtre
-    background = pg.image.load(f"images/{nom}").convert()
-    background = pg.transform.scale(background, fenetre)
 
-    # coller l'arrière plan sur toute la fenêtre
-    ecran.blit(background, (0, 0))
+def charger_image(ecran: pg.Surface, nom: str, taille: tuple[int, int], position: tuple[int, int]) -> None:
+    """Charge une image redimensionnée à une position donnée"""
+    # Charger l'image
+    image = pg.image.load(f"images/{nom}").convert_alpha()
+    # Redimensionner l'image
+    image = pg.transform.scale(image, taille)
+    # Coller l'image sur l'écran à la position donnée
+    ecran.blit(image, position)
 
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
@@ -202,6 +206,53 @@ def apres_mort(ecran: pg.Surface):
     texte_rect.center = (ecran.get_width() // 2, ecran.get_height() // 2)
     ecran.blit(texte_surface, texte_rect)
 
+def evenements_communs(event: pg.event.Event):
+    """Gérer les événements pygame communs à tout le jeu (menu principal + jeu) (pour éviter de dupliquer du code)"""
+    # Envoyé par jouer musique à la fin de la première musique, pour enchaîner les musiques
+    if event.type == pg.USEREVENT + 1:
+        jouer_musique()
+
+    # Si on ferme la fenêtre, on arrête le jeu
+    if event.type == QUIT:
+        config.stopper_tout()
+
+    # Si on relâche le clic gauche, on actionne les boutons sous la souris
+    if event.type == pg.MOUSEBUTTONUP and event.button == 1:
+        actionner_boutons(event.pos)
+
+    konami(event)
+
+
+# Source - https://stackoverflow.com/a/66967741
+# Posted by Alderven
+# Retrieved 2026-05-21, License - CC BY-SA 4.0
+# Et modifié par Paulem
+CODE = [pg.K_UP, pg.K_UP, pg.K_DOWN, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT, pg.K_LEFT,
+pg.K_RIGHT, pg.K_b, pg.K_a]
+code = []
+index = 0
+running = True
+
+def konami(event: pg.event.Event):
+    """Code Konami pour le fun, à activer en appuyant sur L"""
+    global code, index
+    # Si la touche appuyée correspond à la prochaine touche du code, on continue, sinon on réinitialise
+    if event.type == pg.KEYDOWN:
+        if event.key == CODE[index]:
+            # Petit print pour indiquer toussa toussa (pas le verbe + mal orthographié hehe)
+            print(f"Touche correcte pour le code Konami ({index + 1}/{len(CODE)})")
+            code.append(event.key)
+            index += 1
+            # Si on a fini tout le code, on réinitialise tout et on active la fonction secrète
+            if code == CODE:
+                index = 0
+                code = []
+                config.lejedupandujaje()
+        # Si jamais on se trompe, on réinitialise le code
+        else:
+            code = []
+            index = 0
+
 
 async def game_loop():
     """boucle de jeu en asynchrone (parallèle)"""
@@ -228,19 +279,63 @@ async def game_loop():
     IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
     IMAGES["lejedupandu"] = pg.image.load("images/lejedupandu.png").convert_alpha()
 
+    jouer_musique()
+
+    # Variable pour savoir si le slider de volume est en train d'être bougé, pour éviter que ça bouge tout seul...
+    slider_bouge = False
+    # Rectangle du slider de volume musique, on le définit une fois pour éviter de le recréer à chaque frame car il est fixe
+    slider_bg_rect = pg.Rect(500, 55, 200, 10)
+
+    # Menu principal
     while config.fenetre_ouverte and config.pres_jeu:
-        charger_arriere_plan(ecran, "background.jpg")
+        police = pg.font.Font("polices/Minecraft.ttf", 20)
+
+        # Fond d'écran du menu principal
+        charger_arriere_plan(ecran, "soleil.png")
+
+        # Titre du jeu
+        charger_image(ecran, "titre.png", (666, 375), (ecran.get_width() // 2 - 333, 100))
+        # Texte dessus
+        texte_surface = police.render("Bienvenue dans le jeu du Poyo !", False, (0, 0, 0))
+        ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2, 80))
+
+        # Bouton jouer
         charger_bouton(ecran, (20, 30), (100, 50), "Jouer", lambda: config.jouer())
+        # Bouton mode difficile
+        charger_bouton(ecran, (130, 30), (100, 50), "Difficile", config.activer_difficile)
+
+        # Dessiner le slider de volume
+        vol = get_volume_musique()
+        # Dessiner le fond du slider
+        pg.draw.rect(ecran, (100, 100, 100), slider_bg_rect)
+        # Position du bouton du slider en fonction du volume
+        slider_btn_x = slider_bg_rect.x + int(vol * slider_bg_rect.width)
+        # Créer le rectangle du bouton du slider, centré sur la position calculée, avec une taille de 10x30
+        slider_btn_rect = pg.Rect(slider_btn_x - 5, slider_bg_rect.y - 10, 10, 30)
+        pg.draw.rect(ecran, (200, 200, 200), slider_btn_rect)
+
+        texte_surface = police.render("Volume musique", False, (0, 0, 0))
+        ecran.blit(texte_surface, (slider_bg_rect.x, slider_bg_rect.y - 25))
+
         pg.display.update()
 
         # Evenements
         for event in pg.event.get():
-            # Si on ferme la fenêtre, on arrête le jeu
-            if event.type == QUIT:
-                config.stopper_tout()
-            # Si on relâche le clic gauche, on actionne les boutons sous la souris
+            evenements_communs(event)
+
+            # Gérer le slider
+            if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+                if slider_btn_rect.collidepoint(event.pos) or slider_bg_rect.collidepoint(event.pos):
+                    slider_bouge = True
+
+            if event.type == pg.MOUSEMOTION and slider_bouge:
+                rel_x = event.pos[0] - slider_bg_rect.x
+                new_vol = max(0.0, min(1.0, rel_x / slider_bg_rect.width))
+                set_volume_musique(new_vol)
+
+            # Si on relâche le clic gauche, on arrête de bouger le slider
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                actionner_boutons(event.pos)
+                slider_bouge = False
 
         await config.attente_ms()
 
@@ -303,17 +398,7 @@ async def game_loop():
 
         # Evenements
         for event in pg.event.get():
-            # Si on ferme la fenêtre, on arrête le jeu
-            if event.type == QUIT:
-                config.stopper_tout()
-            # Si on relâche le clic gauche, on actionne les boutons sous la souris
-            if event.type == pg.MOUSEBUTTONUP and event.button == 1:
-                actionner_boutons(event.pos)
-            # Touche H pressée
-            if event.type == pg.KEYDOWN and event.key == pg.K_h:
-                config.activer_difficile()
-            if event.type == pg.KEYDOWN and event.key == pg.K_l:
-                config.lejedupandujaje()
+            evenements_communs(event)
 
         await config.attente_ms()
 

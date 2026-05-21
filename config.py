@@ -32,7 +32,7 @@ def multiplicateur_module():
   return min(1, 1/score_pour_multiplicateur())
 
 def score_pour_multiplicateur():
-  return score / 10
+  return max(1, score / 10)
 
 def lejedupandujaje():
   global lejedupandu

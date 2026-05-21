@@ -14,17 +14,16 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [x] Module : défibrillateur après AVC
 - [x] Affichage graphique
   - [x] Base PyGame
-  - [ ] Boutons pour tous les états
-  - [ ] Affichage personnage
-  - [ ] Boîte de dialogue pour interaction
+  - [x] Boutons pour tous les états
+  - [x] Affichage personnage
   - [ ] Menu principal
   - [ ] En dernier : amélioration avec effets
 - [x] Système de score
-- [ ] Musique et sound effect
-- [ ] Système de difficulté
+- [x] Musique et sound effect
+- [x] Système de difficulté
 - [ ] Options du jeu
 - [ ] Top joueurs avec API sur mon serveur
-- [ ] Ajouter Lidérick en personnage jouable grâce au code konami
+- [x] Ajouter Lidérick en personnage jouable grâce au code konami
 - [ ] Plusieurs tamagotchi ?
 - [ ] Système de sauvegarde
 - [ ] Ajouter des batailles de Tamagotchi

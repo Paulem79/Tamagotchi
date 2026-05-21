@@ -8,10 +8,12 @@ from modules import modules
 import modules.DAE as DAE
 import modules.commande as commande
 import config
+import game
 
 resultats: dict[str, Any] = {}
 derniere_execution: dict[Callable, int] = {}
 
+# Fonction pour obtenir le résultat d'un module par son nom
 def obtenir_resultat(nom: str):
     return resultats.get(nom, None)
 
@@ -78,6 +80,7 @@ async def main():
 
     _commandes = asyncio.create_task(commande.action())
 
+    # Initialisation du temps pour la boucle de jeu
     dernier_temps = time.perf_counter()
 
     while config.jeu_en_cours:
@@ -85,14 +88,19 @@ async def main():
 
         # Vrai temps écoulé avec time dcp
         maintenant = time.perf_counter()
+        # Convertir en ms et arrondir pour éviter les problèmes de précision
         ms_passees = int((maintenant - dernier_temps) * 1000)
 
+        # Si jamais il y a un saut de temps (ex: pc bug), on ignore ce temps écoulé
         if ms_passees <= 0:
             continue
-            
+
+        # Ajouter le temps écoulé actuellement au temps total du jeu
         config.ms_ecoule += ms_passees
+        # Mettre à jour le temps de la dernière boucle pour la prochaine itération (variable au dessus du while)
         dernier_temps = maintenant
 
+        # Si le joueur est mort et que le DAE n'est pas encore en cours, on le lance
         if config.mort and not config.dae_en_cours:
             print(f"DAE actif pour la raison: {config.mort_raison}")
             config.dae_en_cours = True
@@ -105,13 +113,8 @@ async def main():
             executer(fonction, tous_les, au_demarrage)
 
 if __name__ == "__main__":
-
     try:
-        # Lancer les deux boucles en parallèle : la boucle principale (main)
-        # et la boucle graphique (game_loop). game.run_all() appelle
-        # asyncio.gather(main.main(), game_loop()) dans `game.py`.
-        import game
-
+        # Lance le jeu, qui s'occupe de tout
         asyncio.run(game.run_all())
     except KeyboardInterrupt:
         pass
