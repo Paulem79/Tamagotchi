@@ -2,6 +2,7 @@ import time
 import asyncio
 from typing import Any, Callable
 
+from config import attente_ms
 from modules import modules
 
 import modules.DAE as DAE
@@ -68,20 +69,19 @@ async def gerer_fin_dae():
         config.stopper_jeu()
     config.dae_en_cours = False
 
-async def attente_ms():
-    """On veut attendre 1 ms pour éviter de tout casser"""
-    await asyncio.sleep(0.001)
 
 async def main():
     while config.pres_jeu:
-        continue
-    
+        await attente_ms()
+
+    print("Le jeu commence !")
+
     _commandes = asyncio.create_task(commande.action())
 
     dernier_temps = time.perf_counter()
 
     while config.jeu_en_cours:
-        await asyncio.sleep(0.001)
+        await attente_ms()
 
         # Vrai temps écoulé avec time dcp
         maintenant = time.perf_counter()
@@ -107,6 +107,11 @@ async def main():
 if __name__ == "__main__":
 
     try:
-        asyncio.run(main())
+        # Lancer les deux boucles en parallèle : la boucle principale (main)
+        # et la boucle graphique (game_loop). game.run_all() appelle
+        # asyncio.gather(main.main(), game_loop()) dans `game.py`.
+        import game
+
+        asyncio.run(game.run_all())
     except KeyboardInterrupt:
         pass

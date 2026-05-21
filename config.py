@@ -1,3 +1,4 @@
+import asyncio
 import math
 
 # Variables importantes du jeu
@@ -15,6 +16,10 @@ def jouer():
 ms_ecoule: int = 0
 mort: bool = False
 mort_raison: str = ""
+
+async def attente_ms():
+    """Attendre 1 ms pour tout synchroniser jeu + pygame, et libérer de la charge processeur aussi"""
+    await asyncio.sleep(0.001)
 
 def multiplicateur_drainage():
   if not difficile:

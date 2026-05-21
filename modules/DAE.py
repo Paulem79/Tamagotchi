@@ -34,7 +34,7 @@ async def dae() -> bool:
     try:
         # On a jusqu'à 5 secondes pour actionner le défibrillateur
         while (config.ms_ecoule - temps_depart) < 5000:
-            await main.attente_ms()
+            await config.attente_ms()
 
             # On compare le temps écoulé par rapport à la boucle principale main, asynchrone
             temps_actuel_ecoule = config.ms_ecoule - temps_depart

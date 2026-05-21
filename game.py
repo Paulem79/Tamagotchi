@@ -242,6 +242,8 @@ async def game_loop():
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 actionner_boutons(event.pos)
 
+        await config.attente_ms()
+
     while config.fenetre_ouverte and not config.pres_jeu:
         # Détruit les boutons existants pour éviter de les dupliquer
         boutons.clear()
@@ -312,6 +314,8 @@ async def game_loop():
                 config.activer_difficile()
             if event.type == pg.KEYDOWN and event.key == pg.K_l:
                 config.lejedupandujaje()
+
+        await config.attente_ms()
 
     pg.quit()
 
