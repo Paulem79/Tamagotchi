@@ -21,7 +21,7 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [x] Système de score
 - [x] Musique et sound effect
 - [x] Système de difficulté
-- [ ] Options du jeu
+- [x] Options du jeu
 - [ ] Top joueurs avec API sur mon serveur
 - [x] Ajouter L... ? en personnage jouable grâce au code konami
 - [ ] Plusieurs tamagotchi ?
