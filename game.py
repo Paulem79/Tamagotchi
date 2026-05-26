@@ -231,7 +231,7 @@ def apres_mort(ecran: pg.Surface):
 
 async def gerer_score_et_leaderboard():
     global leaderboard_data
-    url_base = "http://home.paulem.net:3034"
+    url_base = "http://home.paulem.net:3035"
 
     async with aiohttp.ClientSession() as session:
         # Envoyer le score actuel
