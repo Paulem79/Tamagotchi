@@ -6,6 +6,8 @@ nous trois, sinon ça aurait été une anarchie de classes dans tous les sens, e
 
 import asyncio
 from typing import Callable
+import aiohttp
+import random
 
 import pygame as pg
 from pygame.constants import QUIT
@@ -20,6 +22,9 @@ import modules.sport as sport
 from jeu.aspect_scale import aspect_scale
 from jeu.deobfuscateur import deobfusquer
 from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
+
+leaderboard_data: list = []
+pseudo_joueur: str = random.choice(["Poyo", "PoyoFan", "PoyoLover", "PoyoMaster", "PoyoPro", "PoyoGamer", "PoyoPlayer", "PoyoKing", "PoyoQueen", "PoyoLegend"])
 
 # Contient la liste des boutons, avec leur position, taille et action associée
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
@@ -206,6 +211,39 @@ def apres_mort(ecran: pg.Surface):
     texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, ecran.get_height() // 2)
     ecran.blit(texte_surface, texte_rect)
+
+    # Affichage du Leaderboard
+    police_titre = pg.font.Font("polices/Minecraft.ttf", 40)
+    titre_lb = police_titre.render("--- LEADERBOARD ---", False, (0, 0, 0))
+    titre_rect = titre_lb.get_rect(center=(ecran.get_width() // 2, ecran.get_height() // 2 + 50))
+    ecran.blit(titre_lb, titre_rect)
+
+    police_score = pg.font.Font("polices/Minecraft.ttf", 30)
+    y_offset = 100
+
+    # On itère sur la liste récupérée via l'API
+    for index, entre in enumerate(leaderboard_data):
+        texte = f"{index + 1}. {entre['pseudo']} : {entre['score']}"
+        texte_surface = police_score.render(texte, False, (50, 50, 50))
+        texte_rect = texte_surface.get_rect(center=(ecran.get_width() // 2, (ecran.get_height() // 2) + y_offset))
+        ecran.blit(texte_surface, texte_rect)
+        y_offset += 40
+
+async def gerer_score_et_leaderboard():
+    global leaderboard_data
+    url_base = "http://home.paulem.net:3034"
+
+    async with aiohttp.ClientSession() as session:
+        # Envoyer le score actuel
+        await session.post(f"{url_base}/score", json={
+            "pseudo": pseudo_joueur,
+            "score": config.score
+        })
+
+        # Récupérer les nouveaux meilleurs scores
+        async with session.get(f"{url_base}/leaderboard") as response:
+            if response.status == 200:
+                leaderboard_data = await response.json()
 
 def evenements_communs(event: pg.event.Event):
     """Gérer les événements pygame communs à tout le jeu (menu principal + jeu) (pour éviter de dupliquer du code)"""
@@ -394,6 +432,8 @@ async def game_loop():
         elif not apres_mort_fini:
             jouer_son("mort")
             apres_mort_fini = True
+
+            asyncio.create_task(gerer_score_et_leaderboard())
 
         if not config.jeu_en_cours:
             apres_mort(ecran)
