@@ -214,14 +214,15 @@ def apres_mort(ecran: pg.Surface):
 
     # Affichage du Leaderboard
     police_titre = pg.font.Font("polices/Minecraft.ttf", 40)
-    titre_lb = police_titre.render("--- LEADERBOARD ---", False, (0, 0, 0))
+    titre_lb = police_titre.render("Top Classement", False, (0, 0, 0))
     titre_rect = titre_lb.get_rect(center=(ecran.get_width() // 2, ecran.get_height() // 2 + 50))
     ecran.blit(titre_lb, titre_rect)
 
     police_score = pg.font.Font("polices/Minecraft.ttf", 30)
     y_offset = 100
 
-    # On itère sur la liste récupérée via l'API
+    # Itérer sur la liste récupérée par l'api
+    # TODO: ça trie bien dans l'ordre décroissant des scores ? pas sûr
     for index, entre in enumerate(leaderboard_data):
         texte = f"{index + 1}. {entre['pseudo']} : {entre['score']}"
         texte_surface = police_score.render(texte, False, (50, 50, 50))
