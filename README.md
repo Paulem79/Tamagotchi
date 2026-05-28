@@ -30,3 +30,4 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - [ ] Système de sauvegarde
 - [ ] Ajouter des batailles de Tamagotchi
 - [ ] Publier le jeu sur Steam mdr
+

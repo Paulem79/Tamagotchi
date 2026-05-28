@@ -29,7 +29,8 @@ sons = {
         "sons/sport5.mp3",
         "sons/sport6.mp3",
         "sons/sport7.mp3",
-    ]
+    ],
+    "hehe": "sons/hehe.mp3",
 }
 
 musiques = ["sons/fluffing_a_duck.mp3", "sons/monkeys_spinning_monkeys.mp3", "sons/sneaky_snitch.mp3"]

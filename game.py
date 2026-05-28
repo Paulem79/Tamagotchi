@@ -84,21 +84,20 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     taille = (400, 400)
     position=(0, ecran.get_height()//2 - taille[1]//3)
 
-    #if config.ms_ecoule % 10 == 0:
-        # Toutes les secondes
-        
-    deplacement = []
-    for i in range(0,200,10):
-        deplacement.append(i)
-    for o in range(0,200,10):
-        deplacement.append(200-o)
-
-    global compteurDepla
-    position = (deplacement[0+compteurDepla], ecran.get_height()//2 - taille[1]//3)
-    compteurDepla=compteurDepla+1
-    if compteurDepla==len(deplacement) :
-        compteurDepla=0
+    if not config.mort :
+        deplacement = []
+        for i in range(0,200,10):
+            deplacement.append(i)
+        for o in range(0,200,10):
+            deplacement.append(200-o)
     
+        global compteurDepla
+        position = (deplacement[0+compteurDepla], ecran.get_height()//2 - taille[1]//3)
+        compteurDepla=compteurDepla+1
+        if compteurDepla==len(deplacement) :
+            compteurDepla=0
+    else :
+        position = (100, ecran.get_height()//2 - taille[1]//3)
     # redimensionner l'image du personnage
     personnage = aspect_scale(personnage, taille[0], taille[1])
     # coller le personnage sur l'écran
@@ -308,6 +307,7 @@ def konami(event: pg.event.Event):
                 index = 0
                 code = []
                 config.lejedupandujaje()
+                jouer_son("hehe")
         # Si jamais on se trompe, on réinitialise le code
         else:
             code = []
