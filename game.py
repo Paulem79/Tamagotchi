@@ -65,7 +65,6 @@ def charger_image(ecran: pg.Surface, nom: str, taille: tuple[int, int], position
     # Coller l'image sur l'écran à la position donnée
     ecran.blit(image, position)
 
-compteurDepla=0
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
@@ -90,14 +89,11 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
             deplacement.append(i)
         for o in range(0,200,10):
             deplacement.append(200-o)
-    
-        global compteurDepla
-        position = (deplacement[0+compteurDepla], ecran.get_height()//2 - taille[1]//3)
-        compteurDepla=compteurDepla+1
-        if compteurDepla==len(deplacement) :
-            compteurDepla=0
-    else :
-        position = (100, ecran.get_height()//2 - taille[1]//3)
+
+        temps_ms = pg.time.get_ticks()
+        index_depla = (temps_ms // 40) % len(deplacement)
+        position = (deplacement[index_depla], ecran.get_height()//2 - taille[1]//3)
+
     # redimensionner l'image du personnage
     personnage = aspect_scale(personnage, taille[0], taille[1])
     # coller le personnage sur l'écran
@@ -208,7 +204,7 @@ def actionner_boutons(pos: tuple[int, int]):
             break
 
 
-async def apres_mort(ecran: pg.Surface):
+def apres_mort(ecran: pg.Surface):
     # Bouton rejouer
     charger_bouton(ecran, (20, 30), (100, 50), "Rejouer", config.redemarrer)
     
@@ -241,9 +237,8 @@ async def apres_mort(ecran: pg.Surface):
     y_offset = 100
 
     # Itérer sur la liste récupérée par l'api
-    # TODO: ça trie bien dans l'ordre décroissant des scores ? pas sûr
-    for index, entre in enumerate(leaderboard_data):
-        texte = f"{index + 1}. {entre['pseudo']} : {entre['score']}"
+    for classement_index, entre in enumerate(leaderboard_data):
+        texte = f"{classement_index + 1}. {entre['pseudo']} : {entre['score']}"
         texte_surface = police_score.render(texte, False, (255, 255, 255))
         texte_rect = texte_surface.get_rect(center=(ecran.get_width() // 2, (ecran.get_height() // 2) + y_offset))
         ecran.blit(texte_surface, texte_rect)
@@ -288,30 +283,29 @@ def evenements_communs(event: pg.event.Event):
 # Et modifié par Paulem
 CODE = [pg.K_UP, pg.K_UP, pg.K_DOWN, pg.K_DOWN, pg.K_LEFT, pg.K_RIGHT, pg.K_LEFT,
 pg.K_RIGHT, pg.K_b, pg.K_a]
-code = []
-index = 0
-running = True
+code_entre = []
+index_konami = 0
 
 def konami(event: pg.event.Event):
     """Code Konami pour le fun, à activer en appuyant sur L"""
-    global code, index
+    global code_entre, index_konami
     # Si la touche appuyée correspond à la prochaine touche du code, on continue, sinon on réinitialise
     if event.type == pg.KEYDOWN:
-        if event.key == CODE[index]:
+        if event.key == CODE[index_konami]:
             # Petit print pour indiquer tout ça tout ça
-            print(f"Touche correcte pour le code Konami ({index + 1}/{len(CODE)})")
-            code.append(event.key)
-            index += 1
+            print(f"Touche correcte pour le code Konami ({index_konami + 1}/{len(CODE)})")
+            code_entre.append(event.key)
+            index_konami += 1
             # Si on a fini tout le code, on réinitialise tout et on active la fonction secrète
-            if code == CODE:
-                index = 0
-                code = []
+            if code_entre == CODE:
+                index_konami = 0
+                code_entre = []
                 config.lejedupandujaje()
                 jouer_son("hehe")
         # Si jamais on se trompe, on réinitialise le code
         else:
-            code = []
-            index = 0
+            code_entre = []
+            index_konami = 0
 
 
 async def game_loop():
@@ -347,12 +341,8 @@ async def game_loop():
     # Rectangle du slider de volume musique, on le définit une fois pour éviter de le recréer à chaque frame car il est fixe
     slider_bg_rect = pg.Rect(500, 55, 200, 10)
 
-    # Compteur pas très précis car si le pc est lent, ça va être plus lent
-    menu_ms = 0
-
     # Menu principal
     while config.fenetre_ouverte and config.pres_jeu:
-        menu_ms += 1
         # Fond d'écran du menu principal
         charger_arriere_plan(ecran, "soleil.png")
 
@@ -360,8 +350,9 @@ async def game_loop():
         charger_image(ecran, "titre.png", (666, 375), (ecran.get_width() // 2 - 333, 100))
         # Texte dessus
         police = pg.font.Font(POLICE_MINECRAFT, 80)
-        
-        cligne = " " if menu_ms % 50 < 25 else "_"
+
+        # Toutes les 0.5 secondes
+        cligne = " " if (pg.time.get_ticks() // 500) % 2 == 0 else "_"
         
         texte_surface = police.render(f"{pseudo_joueur}{cligne} !", False, (255, 0, 0))
         ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2 + 30, 170))
@@ -471,10 +462,10 @@ async def game_loop():
             jouer_son("mort")
             apres_mort_fini = True
 
-            asyncio.create_task(gerer_score_et_leaderboard())
+            _task = asyncio.create_task(gerer_score_et_leaderboard())
 
         if not config.jeu_en_cours:
-            await apres_mort(ecran)
+            apres_mort(ecran)
 
         # Mettre à jour rendu
         pg.display.update()
