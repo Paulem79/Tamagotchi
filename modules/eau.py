@@ -7,7 +7,7 @@ def soif() -> tuple[str, int]:
     config.eau -= 1
 
     if config.eau < 1:
-        config.tuer("Mort de soif")
+        config.tuer("soif")
     if config.eau > 110:
         config.tuer("coma hydraulique")
 

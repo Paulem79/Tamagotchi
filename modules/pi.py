@@ -8,7 +8,7 @@ def pypy():
         config.eau -= random.randint(15, 20)
         return ("Pipi :", "pipi")
     if config.eau < 1:
-        config.tuer("Mort de soif !")
+        config.tuer("soif")
 
     # Pipi, on ne renvoit rien
     return None

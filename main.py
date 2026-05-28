@@ -8,10 +8,8 @@ from modules import modules
 import modules.DAE as DAE
 import modules.commande as commande
 import config
+from config import resultats, derniere_execution
 import game
-
-resultats: dict[str, Any] = {}
-derniere_execution: dict[Callable, int] = {}
 
 # Fonction pour obtenir le résultat d'un module par son nom
 def obtenir_resultat(nom: str):

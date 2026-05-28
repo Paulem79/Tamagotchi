@@ -1,21 +1,29 @@
 import asyncio
 import math
-
-# Variables importantes du jeu
-jeu_en_cours: bool = True
-fenetre_ouverte: bool = False
-difficile: bool = False
-lejedupandu: bool = False
-
-pres_jeu: bool = True
+from typing import Any, Callable
+import sys
+import os
+import psutil
 
 def jouer():
   global pres_jeu
   pres_jeu = False
 
-ms_ecoule: int = 0
-mort: bool = False
-mort_raison: str = ""
+def redemarrer():
+  """
+  Redémarrer le jeu
+  Source: https://bobbyhadz.com/blog/how-to-restart-python-script-from-within-itself#restarting-a-python-script-with-psutil
+  """
+  try:
+      process = psutil.Process(os.getpid())
+
+      for handler in process.open_files() + process.connections():
+          os.close(handler.fd)
+  except Exception as e:
+      print(e)
+
+  python = sys.executable
+  os.execl(python, python, *sys.argv)
 
 async def attente_ms():
     """Attendre 1 ms pour tout synchroniser jeu + pygame, et libérer de la charge processeur aussi"""
@@ -63,6 +71,23 @@ def stopper_fenetre():
 def stopper_tout():
   stopper_jeu()
   stopper_fenetre()
+
+
+# Variables importantes du jeu
+jeu_en_cours: bool = True
+fenetre_ouverte: bool = False
+difficile: bool = False
+lejedupandu: bool = False
+
+pres_jeu: bool = True
+
+ms_ecoule: int = 0
+mort: bool = False
+mort_raison: str = ""
+
+# Main
+resultats: dict[str, Any] = {}
+derniere_execution: dict[Callable, int] = {}
 
 # Variables de modules
 # DAE

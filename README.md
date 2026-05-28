@@ -20,7 +20,8 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
   - [ ] En dernier : amélioration avec effets
 - [x] Système de score
 - [x] Musique et sound effect
-- [ ] Pouvoir relancer la partie sans devoir relancer tout le programme
+- [x] Pouvoir relancer la partie
+- [x] Choix du pseudo
 - [x] Système de difficulté
 - [x] Options du jeu
 - [x] Top joueurs avec API sur mon serveur

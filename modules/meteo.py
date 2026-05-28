@@ -23,7 +23,7 @@ def temps():
         meteo_actuel = "orage.png"
         depression()
         if random.randint(0,1000)==0:
-            config.tuer("mort de la foudre")
+            config.tuer("la foudre")
     else: #elif config.pression_atmo < 1000:
         meteo_actuel = "pluie.png"
 

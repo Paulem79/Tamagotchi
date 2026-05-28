@@ -3,7 +3,6 @@ Note: La manière dont l'interface de jeu a été faite n'a pas été conçu pou
 en termes de performances, on pourrait avoir eu mieux. Elle a surtout été conçue pour être facilement modifiable par
 nous trois, sinon ça aurait été une anarchie de classes dans tous les sens, et ce n'était pas le but.
 """
-
 import asyncio
 from typing import Callable
 import aiohttp
@@ -24,7 +23,9 @@ from jeu.deobfuscateur import deobfusquer
 from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
 
 leaderboard_data: list = []
-pseudo_joueur: str = random.choice(["Poyo", "PoyoFan", "PoyoLover", "PoyoMaster", "PoyoPro", "PoyoGamer", "PoyoPlayer", "PoyoKing", "PoyoQueen", "PoyoLegend"])
+pseudo_joueur: str = "POYO"
+
+POLICE_MINECRAFT: str = "polices/pixel.otf"
 
 # Contient la liste des boutons, avec leur position, taille et action associée
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
@@ -64,15 +65,16 @@ def charger_image(ecran: pg.Surface, nom: str, taille: tuple[int, int], position
     # Coller l'image sur l'écran à la position donnée
     ecran.blit(image, position)
 
+compteurDepla=0
 
 def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
     # Si mort, on charge l'image de mort
     personnage = IMAGES["poyo_idle"]
-    if mort:
+    if config.lejedupandu:
+        personnage = IMAGES["lejedupandu"]
+    elif mort:
         personnage = IMAGES["poyo_dead"]
-        if config.lejedupandu:
-            personnage = IMAGES["lejedupandu"]
     elif config.malade:
         personnage = IMAGES["poyo_sick"]
 
@@ -80,11 +82,27 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
         return
 
     taille = (400, 400)
+    position=(0, ecran.get_height()//2 - taille[1]//3)
 
+    #if config.ms_ecoule % 10 == 0:
+        # Toutes les secondes
+        
+    deplacement = []
+    for i in range(0,200,10):
+        deplacement.append(i)
+    for o in range(0,200,10):
+        deplacement.append(200-o)
+
+    global compteurDepla
+    position = (deplacement[0+compteurDepla], ecran.get_height()//2 - taille[1]//3)
+    compteurDepla=compteurDepla+1
+    if compteurDepla==len(deplacement) :
+        compteurDepla=0
+    
     # redimensionner l'image du personnage
     personnage = aspect_scale(personnage, taille[0], taille[1])
     # coller le personnage sur l'écran
-    ecran.blit(personnage, (ecran.get_width() // 2 - taille[0] // 2, ecran.get_height() - taille[1]))
+    ecran.blit(personnage, position)
 
 
 def charger_bouton(
@@ -119,7 +137,7 @@ def charger_bouton(
     button = pg.transform.scale(button, taille)
 
     # Créer texte Arial 20px
-    police = pg.font.Font("polices/Minecraft.ttf", 20)
+    police = pg.font.Font(POLICE_MINECRAFT, 20)
     # Rendu texte en noir
     texte_surface = police.render(texte, False, (0, 0, 0))
 
@@ -136,7 +154,6 @@ def charger_bouton(
 
     # Enregistrer pour détection clics
     boutons.append((position, taille, action))
-
 
 def barre_etat(
     ecran: pg.Surface,
@@ -192,40 +209,43 @@ def actionner_boutons(pos: tuple[int, int]):
             break
 
 
-def apres_mort(ecran: pg.Surface):
+async def apres_mort(ecran: pg.Surface):
+    # Bouton rejouer
+    charger_bouton(ecran, (20, 30), (100, 50), "Rejouer", config.redemarrer)
+    
     # Texte GAME OVER
-    police = pg.font.Font("polices/Minecraft.ttf", 50)
+    police = pg.font.Font(POLICE_MINECRAFT, 50)
     texte_surface = police.render("GAME OVER", False, (255, 0, 0))
     texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 120)
     ecran.blit(texte_surface, texte_rect)
     
     # Texte raison de mort
-    texte_surface = police.render(f"Vous etes mort de {config.mort_raison}", False, (0, 0, 0))
+    texte_surface = police.render(f"Vous êtes mort de {config.mort_raison}", False, (255, 255, 255))
     texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, (ecran.get_height() // 2) - 60)
     ecran.blit(texte_surface, texte_rect)
 
     # Texte score
-    texte_surface = police.render(f"Score: {config.score}", False, (0, 0, 0))
+    texte_surface = police.render(f"Score: {config.score}", False, (255, 255, 255))
     texte_rect = texte_surface.get_rect()
     texte_rect.center = (ecran.get_width() // 2, ecran.get_height() // 2)
     ecran.blit(texte_surface, texte_rect)
 
-    # Affichage du Leaderboard
-    police_titre = pg.font.Font("polices/Minecraft.ttf", 40)
-    titre_lb = police_titre.render("Top Classement", False, (0, 0, 0))
+    # Affichage du classement
+    police_titre = pg.font.Font(POLICE_MINECRAFT, 40)
+    titre_lb = police_titre.render("Top classement", False, (255, 255, 255))
     titre_rect = titre_lb.get_rect(center=(ecran.get_width() // 2, ecran.get_height() // 2 + 50))
     ecran.blit(titre_lb, titre_rect)
 
-    police_score = pg.font.Font("polices/Minecraft.ttf", 30)
+    police_score = pg.font.Font(POLICE_MINECRAFT, 30)
     y_offset = 100
 
     # Itérer sur la liste récupérée par l'api
     # TODO: ça trie bien dans l'ordre décroissant des scores ? pas sûr
     for index, entre in enumerate(leaderboard_data):
         texte = f"{index + 1}. {entre['pseudo']} : {entre['score']}"
-        texte_surface = police_score.render(texte, False, (50, 50, 50))
+        texte_surface = police_score.render(texte, False, (255, 255, 255))
         texte_rect = texte_surface.get_rect(center=(ecran.get_width() // 2, (ecran.get_height() // 2) + y_offset))
         ecran.blit(texte_surface, texte_rect)
         y_offset += 40
@@ -296,7 +316,8 @@ def konami(event: pg.event.Event):
 
 async def game_loop():
     """boucle de jeu en asynchrone (parallèle)"""
-    global apres_mort_fini
+    global apres_mort_fini, pseudo_joueur
+    
     # Initialisation de pygame
     pg.init()
     # Obligé pour écrire texte
@@ -326,38 +347,43 @@ async def game_loop():
     # Rectangle du slider de volume musique, on le définit une fois pour éviter de le recréer à chaque frame car il est fixe
     slider_bg_rect = pg.Rect(500, 55, 200, 10)
 
+    # Compteur pas très précis car si le pc est lent, ça va être plus lent
+    menu_ms = 0
+
     # Menu principal
     while config.fenetre_ouverte and config.pres_jeu:
+        menu_ms += 1
         # Fond d'écran du menu principal
         charger_arriere_plan(ecran, "soleil.png")
 
         # Titre du jeu
         charger_image(ecran, "titre.png", (666, 375), (ecran.get_width() // 2 - 333, 100))
         # Texte dessus
-        police = pg.font.Font("polices/Minecraft.ttf", 80)
-        texte_surface = police.render("POYO !", False, (255, 0, 0))
+        police = pg.font.Font(POLICE_MINECRAFT, 80)
+        
+        cligne = " " if menu_ms % 50 < 25 else "_"
+        
+        texte_surface = police.render(f"{pseudo_joueur}{cligne} !", False, (255, 0, 0))
         ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2 + 30, 170))
         # Sous texte
-        police = pg.font.Font("polices/Minecraft.ttf", 40)
-        texte_surface = police.render("Decouvre la souffrance !", False, (255, 0, 0))
+        police = pg.font.Font(POLICE_MINECRAFT, 40)
+        texte_surface = police.render("Découvre la souffrance !", False, (255, 0, 0))
         ecran.blit(texte_surface, (ecran.get_width() // 2 - texte_surface.get_width() // 2, 380))
 
         # Bouton jouer
-        charger_bouton(ecran, (20, 30), (100, 50), "Jouer", lambda: config.jouer())
+        charger_bouton(ecran, (20, 30), (100, 50), "Jouer", config.jouer)
+
         # Bouton mode difficile
-        charger_bouton(ecran, (130, 30), (100, 50), "Difficile", config.activer_difficile)
+        charger_bouton(ecran, (130, 30), (100, 50), "Facile" if config.difficile else "Difficile", config.activer_difficile)
 
         # Dessiner le slider de volume
         vol = get_volume_musique()
-        # Dessiner le fond du slider
         pg.draw.rect(ecran, (255, 100, 100), slider_bg_rect)
-        # Position du bouton du slider en fonction du volume
         slider_btn_x = slider_bg_rect.x + int(vol * slider_bg_rect.width)
-        # Créer le rectangle du bouton du slider, centré sur la position calculée, avec une taille de 10x30
         slider_btn_rect = pg.Rect(slider_btn_x - 5, slider_bg_rect.y - 10, 10, 30)
         pg.draw.rect(ecran, (255, 200, 200), slider_btn_rect)
 
-        police = pg.font.Font("polices/Minecraft.ttf", 20)
+        police = pg.font.Font(POLICE_MINECRAFT, 20)
         texte_surface = police.render("Musique", False, (0, 0, 0))
         ecran.blit(texte_surface, (slider_bg_rect.x, slider_bg_rect.y - 30))
 
@@ -366,6 +392,18 @@ async def game_loop():
         # Evenements
         for event in pg.event.get():
             evenements_communs(event)
+
+            # Gestion du clavier pour le pseudo
+            if event.type == pg.KEYDOWN:
+                if event.key == pg.K_BACKSPACE:
+                    # Supprimer le dernier caractère
+                    pseudo_joueur = pseudo_joueur[:-1]
+
+            elif event.type == pg.TEXTINPUT:
+                # Ajoute le caractère tapé (gère les majuscules, etc.)
+                # Limite à 12 caractères pour éviter que ça dépasse du titre
+                if len(pseudo_joueur) < 12:
+                    pseudo_joueur += event.text
 
             # Gérer le slider
             if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
@@ -377,7 +415,6 @@ async def game_loop():
                 new_vol = max(0.0, min(1.0, rel_x / slider_bg_rect.width))
                 set_volume_musique(new_vol)
 
-            # Si on relâche le clic gauche, on arrête de bouger le slider
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 slider_bouge = False
 
@@ -399,10 +436,10 @@ async def game_loop():
 
         if config.jeu_en_cours:
             if not config.mort:
-                charger_bouton(ecran, (20, 30), (100, 50), "Manger", nourriture.nourrir)
-                charger_bouton(ecran, (130, 30), (100, 50), "Boire", eau.boire)
-                charger_bouton(ecran, (240, 30), (100, 50), "Soigner", sante.guerir)
-                charger_bouton(ecran, (350, 30), (100, 50), "Sport", sport.sport)
+                charger_bouton(ecran, (20, 30), (100, 50), "Boire", eau.boire)
+                charger_bouton(ecran, (130, 30), (100, 50), "Manger", nourriture.nourrir)
+                charger_bouton(ecran, (240, 30), (100, 50), "Sport", sport.sport)
+                charger_bouton(ecran, (350, 30), (100, 50), "Soigner", sante.guerir)
             # Si besoin d'afficher le défibrillateur et qu'on est mort, on met le bouton
             if config.demande_defibrillateur and config.mort:
                 charger_bouton(
@@ -437,7 +474,7 @@ async def game_loop():
             asyncio.create_task(gerer_score_et_leaderboard())
 
         if not config.jeu_en_cours:
-            apres_mort(ecran)
+            await apres_mort(ecran)
 
         # Mettre à jour rendu
         pg.display.update()
@@ -452,10 +489,10 @@ async def game_loop():
 
 
 async def run_all():
-    """Lance tout en parallèle"""
+    """Lance main (notamment les modules) et pygame en parallèle"""
     await asyncio.gather(main.main(), game_loop())
 
 
-# Tout exécuter si on est le fichier principal (python game.py)
+# Tout exécuter si c'est le fichier principal (python game.py)
 if __name__ == "__main__":
     asyncio.run(run_all())
