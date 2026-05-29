@@ -23,12 +23,15 @@ from jeu.aspect_scale import aspect_scale
 from jeu.deobfuscateur import deobfusquer
 from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
 
+# Données du classement par l'api + pseudo du joueur (par défaut, le titre du jeu)
 donnees_classement: list = []
 pseudo_joueur: str = "POYO"
 
+# Police style Minecraft
 POLICE_MINECRAFT: str = "polices/pixel.otf"
 
 # Contient la liste des boutons, avec leur position, taille et action associée
+# Liste de (position, taille, action)
 boutons: list[tuple[tuple[int, int], tuple[int, int], Callable[[], None]]] = []
 
 # Voir dans le début de game_loop
@@ -40,12 +43,13 @@ IMAGES: dict[str, pg.Surface | None] = {
     "lejedupandu": None,
 }
 
+# Une fois que le DAE est passé et qu'on est réellement mort
 apres_mort_fini: bool = False
 
 
 def creer_ecran(fenetre: tuple[int, int]) -> pg.Surface:
     """Crée l'écran de jeu"""
-    # Dire qu'on veut cette taille de fenêtre
+    # Dire qu'on veut cette taille de fenêtre, et RESIZABLE = redimensionnable
     ecran = pg.display.set_mode(fenetre, pg.RESIZABLE)
     return ecran
 

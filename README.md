@@ -16,6 +16,11 @@ python game.py
 ```
 Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici, normalement ça fonctionnera déjà
 
+## Explication du jeu
+Le but du jeu est de faire survivre la créature en la nourrissant, lui donnant à boire et en lui faisant faire du sport.
+C'est comme un Tamagotchi mais beaucoup plus rapide et difficile.
+La créature est très fragile et peut mourir facilement, il faut donc être rapide et réactif et constamment la surveiller !
+
 ## Remarquable
 - Gestion des différents systèmes du Tamagotchi avec des modules
 - Easter eggs
@@ -35,7 +40,7 @@ Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici
 - Aide sur l'affichage pygame
 
 ### Difficultés rencontrées :
-- à compléter
+- Orientation (les mettre à la vertical) et ratio des jauges
 
 ## Quentin
 ### Fait :
@@ -45,7 +50,7 @@ Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici
 - Aide sur l'affichage pygame
 
 ### Difficultés rencontrées :
-- à compléter
+- Mouvements du personnage sur l'écran
 
 ## Paulem
 ### Fait :
