@@ -7,10 +7,10 @@ import modules.DAE as DAE
 import config
 
 async def action():
+    # Input asynchrone pour pas bloquer le jeu
     a = await aioconsole.ainput('')
 
     if a == "dae":
-        print("dae")
         DAE.actionner()
     elif a == "nourrir":
         nourriture.nourrir()

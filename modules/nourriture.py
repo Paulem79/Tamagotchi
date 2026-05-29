@@ -3,7 +3,7 @@ import config
 from jeu.musique import jouer_son
 
 
-# fonction de nourritur renvoi la quantitté de faim et la mort si faim=0
+# fonction de nourriture renvoie la quantité de faim et la mort si faim=0
 def nourriture() -> tuple[str, int]:
     if config.faim < 1:
         config.tuer("faim")

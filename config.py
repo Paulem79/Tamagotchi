@@ -102,7 +102,7 @@ faim: int = 100
 # Eau
 eau: int = 50
 # Score
-score = 0
+score: int = 0
 # Sante
 malade: bool = False
 etat_de_sante: int = 100

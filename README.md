@@ -22,6 +22,7 @@ Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici
 - Menu principal
 - DA graphique cohérente
 - Mode de difficulté sélectionnable
+- Jouable en graphique et en quasiment entièrement en lignes de commande ! (voir modules/commande.py)
 - Et bien d'autre
 
 ## Léo

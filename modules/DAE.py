@@ -10,8 +10,10 @@ def actionner():
         config.dae_actionne = True
         config.demande_defibrillateur = False
 
+
 def echec():
     config.stopper_jeu()
+
 
 def reussi():
     config.mort = False
@@ -20,6 +22,7 @@ def reussi():
     config.eau = 30
     config.malade = False
     config.etat_de_sante = 30
+
 
 async def dae() -> bool:
     if not config.jeu_en_cours:
@@ -32,11 +35,11 @@ async def dae() -> bool:
     derniere_seconde_affichee = 0
 
     try:
-        # On a jusqu'à 5 secondes pour actionner le défibrillateur
+        # 5 secondes pour actionner le défibrillateur
         while (config.ms_ecoule - temps_depart) < 5000:
             await config.attente_ms()
 
-            # On compare le temps écoulé par rapport à la boucle principale main, asynchrone
+            # On compare le temps écoulé par rapport à main, asynchrone
             temps_actuel_ecoule = config.ms_ecoule - temps_depart
             seconde_actuelle = temps_actuel_ecoule // 1000
 
@@ -55,16 +58,19 @@ async def dae() -> bool:
             if random.randint(0, 100) <= 35:
                 reussi()
                 print("En vie !")
-                return False  # Pas complètement mort
+                # Pas complètement mort
+                return False
 
             echec()
             print("Échec de la réanimation.")
-            return True   # Complètement mort
+            # Complètement mort
+            return True
 
-        # Les 5 secondes sont passées
+        # Les 5 secondes sont passés
         echec()
         print("Échec (temps écoulé).")
-        return True       # Complètement mort
-    finally: # reset les variables à chaque fois pour éviter les bugs
+        # Complètement mort
+        return True
+    finally:  # reset les variables à chaque fois pour éviter les bugs
         config.dae_actionne = False
         config.demande_defibrillateur = False

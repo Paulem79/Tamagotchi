@@ -23,7 +23,7 @@ from jeu.aspect_scale import aspect_scale
 from jeu.deobfuscateur import deobfusquer
 from jeu.musique import jouer_son, jouer_musique, get_volume_musique, set_volume_musique
 
-leaderboard_data: list = []
+donnees_classement: list = []
 pseudo_joueur: str = "POYO"
 
 POLICE_MINECRAFT: str = "polices/pixel.otf"
@@ -253,25 +253,27 @@ def apres_mort(ecran: pg.Surface):
     ecran.blit(titre_lb, titre_rect)
 
     police_score = pg.font.Font(POLICE_MINECRAFT, 30)
-    y_offset = 100
+    deplacement_y = 100
 
     # Itérer sur la liste récupérée par l'api
-    for classement_index, entre in enumerate(leaderboard_data):
+    for classement_index, entre in enumerate(donnees_classement):
+        # Afficher la place dans le classement avec le pseudo et le score (renvoyé par l'api)
         texte = f"{classement_index + 1}. {entre['pseudo']} : {entre['score']}"
         texte_surface = police_score.render(texte, False, (255, 255, 255))
         texte_rect = texte_surface.get_rect(
-            center=(ecran.get_width() // 2, (ecran.get_height() // 2) + y_offset)
+            center=(ecran.get_width() // 2, (ecran.get_height() // 2) + deplacement_y)
         )
         ecran.blit(texte_surface, texte_rect)
-        y_offset += 40
+        # Abaisser de 40 pixels pour le prochain score
+        deplacement_y += 40
 
 
-async def gerer_score_et_leaderboard():
-    global leaderboard_data
+async def envoyer_score_recup_classement():
+    global donnees_classement
     url_base = "http://home.paulem.net:3035"
 
     async with aiohttp.ClientSession() as session:
-        # Envoyer le score actuel
+        # Envoyer le score actuel avec le pseudo
         await session.post(
             f"{url_base}/score", json={"pseudo": pseudo_joueur, "score": config.score}
         )
@@ -279,7 +281,7 @@ async def gerer_score_et_leaderboard():
         # Récupérer les nouveaux meilleurs scores
         async with session.get(f"{url_base}/leaderboard") as response:
             if response.status == 200:
-                leaderboard_data = await response.json()
+                donnees_classement = await response.json()
 
 
 def evenements_communs(event: pg.event.Event):
@@ -335,6 +337,7 @@ def konami(event: pg.event.Event):
             if code_entre == CODE:
                 index_konami = 0
                 code_entre = []
+                # Fonction secrète
                 config.lejedupandujaje()
                 jouer_son("hehe")
         # Si jamais on se trompe, on réinitialise le code
@@ -517,7 +520,7 @@ async def game_loop():
             jouer_son("mort")
             apres_mort_fini = True
 
-            _task = asyncio.create_task(gerer_score_et_leaderboard())
+            _task = asyncio.create_task(envoyer_score_recup_classement())
 
         if not config.jeu_en_cours:
             apres_mort(ecran)
@@ -535,7 +538,7 @@ async def game_loop():
 
 
 async def run_all():
-    """Lance main (notamment les modules) et pygame en parallèle"""
+    """Lance main (les modules) et pygame en parallèle"""
     await asyncio.gather(main.main(), game_loop())
 
 

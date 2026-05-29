@@ -22,6 +22,7 @@ def boire():
     if config.eau > 60 and config.eau < 100:
         print("Trop bu !")
         config.eau += quantite
+        # 1/2 de devenir malade
         if random.randint(0,1)==0:
             config.malade = True
     if config.eau > 100:
