@@ -31,12 +31,15 @@ async def attente_ms():
 
 def multiplicateur_drainage():
   if not difficile:
-    return 1
+    # Très racine carrée, mais au moins ça augmente lentement
+    return math.sqrt(math.sqrt(math.sqrt(score_pour_multiplicateur())))
   return math.sqrt(score_pour_multiplicateur())
 
 def multiplicateur_module():
   if not difficile:
-    return 1
+    # Plus c'est proche de 0, plus ça diminue lentement, dcp 0.3 c'est pas trop mal
+    puissance = 0.3
+    return min(1, 1 / (score_pour_multiplicateur() ** puissance))
   return min(1, 1/score_pour_multiplicateur())
 
 def score_pour_multiplicateur():

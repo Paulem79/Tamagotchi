@@ -68,9 +68,11 @@ Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici
 ### Difficultés rencontrées :
 - Je n'avais pas touché depuis 5 ans à pygame
 - Les fonctions asynchrones (avec asyncio) et la synchronisation entre pygame et le main.py étaient un peu complexes à mettre en place, mais une fois ajoutées, plus trop besoin de changer les logiques sur lesquelles elles reposent
+- Le relancement du jeu aurait impliqué la réinitialisation de trop d'états/variables ainsi que de devoir réexécuter le main et pygame en parallèle pour bien les redémarrer, ce qui aurait demandé trop de code supplémentaire, la solution, qu'on peut juger de facile, est de relancer le programme complètement. Cependant, cela remplit la fonction de relancer le jeu !
 
 ## Notes
-Oui, les barres débordent, mais c'est fait exprès, j'ai mis la solution en commentaire dans le code dans game.py !
+- Oui, les barres débordent, mais c'est fait exprès, j'ai mis la solution en commentaire dans le code dans game.py !
+- Relancer le jeu peut ne pas fonctionner sur Thonny, je ne sais pas pourquoi, mais ça le fait que avec Thonny j'ai l'impression, mystère...
   
 
 ## Tamagotchi – Cahier des charges
@@ -89,15 +91,16 @@ Oui, les barres débordent, mais c'est fait exprès, j'ai mis la solution en com
   - [x] Boutons pour tous les états
   - [x] Affichage personnage
   - [x] Menu principal
-  - [ ] En dernier : amélioration avec effets
 - [x] Système de score
-- [x] Musique et sound effect
 - [x] Pouvoir relancer la partie
+<p>Bonus :</p>
+
+- [x] Musique et sound effect
+- [x] Système de difficulté + Options du jeu
 - [x] Choix du pseudo
-- [x] Système de difficulté
-- [x] Options du jeu
 - [x] Top joueurs avec API sur mon serveur
 - [x] Ajouter L... ? en personnage jouable grâce au code konami
+- [ ] Affichage graphique : amélioration avec effets
 - [ ] Plusieurs tamagotchi ?
 - [ ] Système de sauvegarde
 - [ ] Ajouter des batailles de Tamagotchi
