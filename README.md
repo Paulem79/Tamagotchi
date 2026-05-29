@@ -15,7 +15,7 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - Ajout de la police personnalisée
 - Création du fichier de config (variables mutualisées)
 - Création de l'obfuscateur/déobfuscateur des fichiers
-- Importation sur Github, gestion du VCS
+- Importation sur Github, gestion du VCS, et commit à la fin de chaque séance et pour les changements faits hors cours
 - Ajout des easters eggs (sauf pour la météo)
 - Gestion des dépendances
 - Aide sur l'affichage et les modules
