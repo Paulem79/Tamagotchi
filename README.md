@@ -1,6 +1,15 @@
 # Tamagotchi
 Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 
+## Remarquable
+- Gestion des différents systèmes du Tamagotchi avec des modules
+- Ajout d'easter eggs
+- Musique et sons
+- API pour gestion du score
+- Menu principal
+- DA graphique cohérente
+- Mode de difficulté sélectionnable
+
 ## Ce qu'on a fait
 ### Paulem
 - Implémentation des bases pour le fonctionnement des modules (main.py)
@@ -18,7 +27,8 @@ Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 - Importation sur Github, gestion du VCS, et commit à la fin de chaque séance et pour les changements faits hors cours
 - Ajout des easters eggs (sauf pour la météo)
 - Gestion des dépendances
-- Aide sur l'affichage et les modules
+- Aide sur l'affichage et les modules (refactorisation des modules et adaptation pour leur fonctionnement avec pygame)
+- Gestion du fonctionnement parallèle, asynchrone, du main et de pygame
 
 ## Tamagotchi – Cahier des charges
 
