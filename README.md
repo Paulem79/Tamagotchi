@@ -1,6 +1,8 @@
 # Tamagotchi
 Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 
+Dépôt Github : https://github.com/Paulem79/Tamagotchi
+
 ## Lancer le programme
 Installer les prérequis pour le projet :
 ```bash
