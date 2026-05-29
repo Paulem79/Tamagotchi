@@ -3,7 +3,7 @@ import random
 
 from jeu.deobfuscateur import deobfusquer
 
-volume_musique = 1
+volume_musique: float = 1.0
 
 sons = {
     "mort": "sons/mort.mp3",

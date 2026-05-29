@@ -327,31 +327,33 @@ async def game_loop():
     pg.display.flip()
     config.fenetre_ouverte = True
 
-    # Améliore les performances en évitant de charger les images à chaque frame
+    # Améliore les performances en évitant de charger les images à chaque frame en les mettant toutes dans un dictionnaire
     IMAGES["bouton"] = pg.image.load("images/button.png").convert_alpha()
     IMAGES["poyo_idle"] = pg.image.load("images/poyo_Idle.png").convert_alpha()
     IMAGES["poyo_dead"] = pg.image.load("images/poyo_dead.png").convert_alpha()
     IMAGES["poyo_sick"] = pg.image.load("images/poyo_Idle_sick.png").convert_alpha()
     IMAGES["lejedupandu"] = pg.image.load(deobfusquer("images/lejedupandu.png")).convert_alpha()
 
+    # Initialiser la musique de fond
     jouer_musique()
 
-    # Variable pour savoir si le slider de volume est en train d'être bougé, pour éviter que ça bouge tout seul...
+    # Variable pour savoir si le slider de volume est en train d'être bougé (lorsque appuie sur le curseur), pour éviter que ça bouge tout seul...
     slider_bouge = False
     # Rectangle du slider de volume musique, on le définit une fois pour éviter de le recréer à chaque frame car il est fixe
     slider_bg_rect = pg.Rect(500, 55, 200, 10)
 
-    # Menu principal
+    # Boucle du menu principal
     while config.fenetre_ouverte and config.pres_jeu:
         # Fond d'écran du menu principal
         charger_arriere_plan(ecran, "soleil.png")
 
         # Titre du jeu
         charger_image(ecran, "titre.png", (666, 375), (ecran.get_width() // 2 - 333, 100))
+
         # Texte dessus
         police = pg.font.Font(POLICE_MINECRAFT, 80)
 
-        # Toutes les 0.5 secondes
+        # Toutes les 0.5 secondes, il y a un _ en plus dans le texte
         cligne = " " if (pg.time.get_ticks() // 500) % 2 == 0 else "_"
         
         texte_surface = police.render(f"{pseudo_joueur}{cligne} !", False, (255, 0, 0))
