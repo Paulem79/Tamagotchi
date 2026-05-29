@@ -1,7 +1,6 @@
 import random
 
 import config
-import main
 from jeu.musique import jouer_son
 
 

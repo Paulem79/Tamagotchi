@@ -77,19 +77,26 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
     """Charge le personnage de jeu"""
     # Si mort, on charge l'image de mort
     personnage = IMAGES["poyo_idle"]
+    # Si *secret*, alors image secrète
     if config.lejedupandu:
         personnage = IMAGES["lejedupandu"]
+    # Si mort, alors image poyo_dead
     elif mort:
         personnage = IMAGES["poyo_dead"]
+    # Si malade, alors image poyo_sick
     elif config.malade:
         personnage = IMAGES["poyo_sick"]
 
+    # S'il n'y a pas d'image de personnage, on le montre pas (devrait pas arriver)
     if personnage is None:
         return
 
+    # Taille du personnage
     taille = (400, 400)
+    # Sa position
     position = (0, ecran.get_height() // 2 - taille[1] // 3)
 
+    # Si pas mort, gérer son déplacement dans la fenêtre
     if not config.mort:
         deplacement = []
         for i in range(0, 200, 10):
@@ -101,7 +108,7 @@ def charger_personnage(ecran: pg.Surface, mort: bool) -> None:
         index_depla = (temps_ms // 40) % len(deplacement)
         position = (deplacement[index_depla], ecran.get_height() // 2 - taille[1] // 3)
 
-    # redimensionner l'image du personnage
+    # redimensionner l'image du personnage pour conserver ses proportions
     personnage = aspect_scale(personnage, taille[0], taille[1])
     # coller le personnage sur l'écran
     ecran.blit(personnage, position)
@@ -228,6 +235,7 @@ def apres_mort(ecran: pg.Surface):
     charger_bouton(ecran, (20, 30), (100, 50), "Rejouer", config.redemarrer)
 
     # Texte GAME OVER
+    # Pour info, ça définit la police à la police minecraft, avec une taille 50 ici
     police = pg.font.Font(POLICE_MINECRAFT, 50)
     texte_surface = police.render("GAME OVER", False, (255, 0, 0))
     texte_rect = texte_surface.get_rect()
@@ -284,6 +292,7 @@ async def envoyer_score_recup_classement():
 
         # Récupérer les nouveaux meilleurs scores
         async with session.get(f"{url_base}/leaderboard") as response:
+            # Si réponse HTTP 200 (donc c'est tout bon), alors mettre les données reçues dans la variable
             if response.status == 200:
                 donnees_classement = await response.json()
 
@@ -302,6 +311,7 @@ def evenements_communs(event: pg.event.Event):
     if event.type == pg.MOUSEBUTTONUP and event.button == 1:
         actionner_boutons(event.pos)
 
+    # Gestion du code Konami
     konami(event)
 
 
@@ -309,6 +319,8 @@ def evenements_communs(event: pg.event.Event):
 # Posted by Alderven
 # Retrieved 2026-05-21, License - CC BY-SA 4.0
 # Et modifié par Paulem
+
+# Séquence du code konami
 CODE = [
     pg.K_UP,
     pg.K_UP,
@@ -321,7 +333,9 @@ CODE = [
     pg.K_b,
     pg.K_a,
 ]
+# Code déjà entré par la personne, à la suite
 code_entre = []
+# Cette variable répond à une question : On en est à où dans ce qu'on a entré dans le code ? (je savais pas comment expliquer sinon)
 index_konami = 0
 
 
@@ -331,7 +345,7 @@ def konami(event: pg.event.Event):
     # Si la touche appuyée correspond à la prochaine touche du code, on continue, sinon on réinitialise
     if event.type == pg.KEYDOWN:
         if event.key == CODE[index_konami]:
-            # Petit print pour indiquer tout ça tout ça
+            # Petit print pour indiquer, tout ça tout ça
             print(
                 f"Touche correcte pour le code Konami ({index_konami + 1}/{len(CODE)})"
             )
@@ -429,7 +443,9 @@ async def game_loop():
 
         # Dessiner le slider de volume
         vol = get_volume_musique()
+        # Fond du slider
         pg.draw.rect(ecran, (255, 100, 100), slider_bg_rect)
+        # Bouton de volume, positionné en fonction du volume actuel (entre 0 et 1)
         slider_btn_x = slider_bg_rect.x + int(vol * slider_bg_rect.width)
         slider_btn_rect = pg.Rect(slider_btn_x - 5, slider_bg_rect.y - 10, 10, 30)
         pg.draw.rect(ecran, (255, 200, 200), slider_btn_rect)
@@ -463,11 +479,13 @@ async def game_loop():
                 ) or slider_bg_rect.collidepoint(event.pos):
                     slider_bouge = True
 
+            # Si la souris bouge et qu'on a le slider de sélectionné, on bouge le volume selon comment on a bougé la souris par rapport au slider (c'est un peu technique à expliquer)
             if event.type == pg.MOUSEMOTION and slider_bouge:
                 rel_x = event.pos[0] - slider_bg_rect.x
                 new_vol = max(0.0, min(1.0, rel_x / slider_bg_rect.width))
                 set_volume_musique(new_vol)
 
+            # Si on relâche le clic gauche, on arrête de bouger le slider
             if event.type == pg.MOUSEBUTTONUP and event.button == 1:
                 slider_bouge = False
 

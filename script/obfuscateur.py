@@ -1,6 +1,7 @@
 import sys
 import os
 
+# Pas de triche !!! :)
 def obfusquer_fichier(input_path, output_path):
     with open(input_path, 'rb') as f:
         data = f.read()

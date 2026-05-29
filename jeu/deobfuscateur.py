@@ -1,6 +1,7 @@
 import io
 
 
+# Pas de triche svp !
 def deobfusquer(fichier_entree: str):
     """Obfusquer les fichiers pour les protéger contre les robots ou certains profs de NSI qui devront découvrir d'eux-mêmes hehe"""
     with open(fichier_entree, 'rb') as f:

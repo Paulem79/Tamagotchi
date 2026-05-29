@@ -30,7 +30,13 @@ La créature est très fragile et peut mourir facilement, il faut donc être rap
 - DA graphique cohérente
 - Mode de difficulté sélectionnable
 - Jouable en graphique et en quasiment entièrement en lignes de commande ! (voir modules/commande.py)
-- Et bien d'autre
+- Et bien d'autre !
+
+## Répartition globale des rôles
+- Léo : gestion de la partie graphique (jauges), et de la partie modules (nourriture, soif, sport, météo, etc)
+- Quentin : gestion de la partie images (personnage, fonds par météo, boutons), et de la partie modules (DAE, santé, score)
+- Paulem : gestion de l'organisation du projet, et de la partie graphique (menu, affichage du personnage, boutons, météo, etc), ainsi que de la partie backend (API pour le score), et de la partie asynchrone (synchronisation entre le main.py et pygame)
+Mais on a un peu tous les trois aidés chacun sur les différentes parties, et tout n'est pas notée ici (détails plus bas)
 
 ## Léo
 ### Fait :
@@ -77,11 +83,12 @@ La créature est très fragile et peut mourir facilement, il faut donc être rap
 - Je n'avais pas touché depuis 5 ans à pygame
 - Les fonctions asynchrones (avec asyncio) et la synchronisation entre pygame et le main.py étaient un peu complexes à mettre en place, mais une fois ajoutées, plus trop besoin de changer les logiques sur lesquelles elles reposent
 - Le relancement du jeu aurait impliqué la réinitialisation de trop d'états/variables ainsi que de devoir réexécuter le main et pygame en parallèle pour bien les redémarrer, ce qui aurait demandé trop de code supplémentaire, la solution, qu'on peut juger de facile, est de relancer le programme complètement. Cependant, cela remplit la fonction de relancer le jeu !
+- La première police, Minecraft.ttf, toujours présente, n'avait pas d'accents, j'en ai donc trouvé une autre
 
 ## Notes
 - Oui, les barres débordent, mais c'est fait exprès, j'ai mis la solution en commentaire dans le code dans game.py !
 - Relancer le jeu peut ne pas fonctionner sur Thonny, je ne sais pas pourquoi, mais ça le fait que avec Thonny j'ai l'impression, mystère...
-  
+
 
 ## Tamagotchi – Cahier des charges
 
