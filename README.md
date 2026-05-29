@@ -1,6 +1,25 @@
 # Tamagotchi
 Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 
+## Ce qu'on a fait
+### Paulem
+- Implémentation des bases pour le fonctionnement des modules (main.py)
+- Création de l'agencement de l'affichage pygame et de son organisation au niveau du code
+- Création des fonctions basiques du code pour pygame, notamment pour afficher les boutons, le personnage
+- Fenêtre pygame rendue responsive : les éléments s'adaptent aux changements de taille de la fenêtre (dans une certaine mesure)
+- Création du menu principal
+- Création du bouton pour relancer la partie
+- Création du sélecteur du pseudo
+- Création du système de son/musique
+- Création de l'api distante pour le système de score (disponible dans `api/` en Typescript) (enregistrement avec POST, et obtention du top 5 avec GET)
+- Ajout de la police personnalisée
+- Création du fichier de config (variables mutualisées)
+- Création de l'obfuscateur/déobfuscateur des fichiers
+- Importation sur Github, gestion du VCS
+- Ajout des easters eggs (sauf pour la météo)
+- Gestion des dépendances
+- Aide sur l'affichage et les modules
+
 ## Tamagotchi – Cahier des charges
 
 - [x] Système de modules
