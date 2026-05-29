@@ -1,34 +1,77 @@
 # Tamagotchi
 Un jeu type Tamagotchi réalisé en groupe pour la NSI.
 
+## Lancer le programme
+Installer les prérequis pour le projet :
+```bash
+pip install -r requirements.txt
+# Ou sinon, direct les paquets
+pip install pygame aioconsole psutil aiohttp
+```
+Lancer le projet :
+```bash
+python game.py
+```
+Si besoin, il faudra créer un venv python, mais je vais pas tout détailler ici, normalement ça fonctionnera déjà
+
 ## Remarquable
 - Gestion des différents systèmes du Tamagotchi avec des modules
-- Ajout d'easter eggs
+- Easter eggs
 - Musique et sons
-- API pour gestion du score
+- API pour gestion du score (avec classement !)
 - Menu principal
 - DA graphique cohérente
 - Mode de difficulté sélectionnable
+- Et bien d'autre
 
-## Ce qu'on a fait
-### Paulem
-- Implémentation des bases pour le fonctionnement des modules (main.py)
+## Léo
+### Fait :
+- Création de jauge de vie, de nourriture et d'eau
+- Création du module de nourriture, de dépression, d'eau, de mort, de besoins, de météo avec pression atmosphérique, et de sport
+- Aide sur le module de DAE, et de santé
+- Aide sur l'affichage pygame
+
+### Difficultés rencontrées :
+- à compléter
+
+## Quentin
+### Fait :
+- Création des graphismes principaux : personnage, fonds par météo, boutons
+- Création du module de DAE, de santé, et de score
+- Aide et changements sur différents modules
+- Aide sur l'affichage pygame
+
+### Difficultés rencontrées :
+- à compléter
+
+## Paulem
+### Fait :
+- Implémentation de tout le fonctionnement des modules et son système (main.py)
 - Création de l'agencement de l'affichage pygame et de son organisation au niveau du code
 - Création des fonctions basiques du code pour pygame, notamment pour afficher les boutons, le personnage
 - Fenêtre pygame rendue responsive : les éléments s'adaptent aux changements de taille de la fenêtre (dans une certaine mesure)
 - Création du menu principal
-- Création du bouton pour relancer la partie
+- Création de l'affichage de titre du jeu
+- Création du bouton pour relancer la partie et du bouton de difficulté, ainsi que du bouton joué
 - Création du sélecteur du pseudo
 - Création du système de son/musique
 - Création de l'api distante pour le système de score (disponible dans `api/` en Typescript) (enregistrement avec POST, et obtention du top 5 avec GET)
 - Ajout de la police personnalisée
 - Création du fichier de config (variables mutualisées)
-- Création de l'obfuscateur/déobfuscateur des fichiers
+- Création de l'obfuscateur/déobfuscateur de fichiers
 - Importation sur Github, gestion du VCS, et commit à la fin de chaque séance et pour les changements faits hors cours
 - Ajout des easters eggs (sauf pour la météo)
 - Gestion des dépendances
 - Aide sur l'affichage et les modules (refactorisation des modules et adaptation pour leur fonctionnement avec pygame)
 - Gestion du fonctionnement parallèle, asynchrone, du main et de pygame
+
+### Difficultés rencontrées :
+- Je n'avais pas touché depuis 5 ans à pygame
+- Les fonctions asynchrones (avec asyncio) et la synchronisation entre pygame et le main.py étaient un peu complexes à mettre en place, mais une fois ajoutées, plus trop besoin de changer les logiques sur lesquelles elles reposent
+
+## Notes
+Oui, les barres débordent, mais c'est fait exprès, j'ai mis la solution en commentaire dans le code dans game.py !
+  
 
 ## Tamagotchi – Cahier des charges
 
